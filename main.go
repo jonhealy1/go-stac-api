@@ -2,6 +2,7 @@ package main
 
 import (
 	"go-stac-api/configs"
+	"go-stac-api/routes"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -11,6 +12,8 @@ func main() {
 
 	//run database
 	configs.ConnectDB()
+
+	routes.UserRoute(app)
 
 	app.Listen(":6000")
 }
