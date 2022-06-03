@@ -3,9 +3,9 @@ module go-stac-api
 go 1.15
 
 require (
-	github.com/go-playground/validator/v10 v10.11.0 // indirect
+	github.com/go-playground/validator/v10 v10.11.0
 	github.com/go-stack/stack v1.8.1 // indirect
-	github.com/gofiber/fiber/v2 v2.34.0 // indirect
+	github.com/gofiber/fiber/v2 v2.34.0
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/joho/godotenv v1.4.0
 	github.com/klauspost/compress v1.15.5 // indirect
