@@ -1,18 +1,16 @@
 package models
 
-// type Link struct {
-// 	Rel string `json:"rel,omitempty"`
-// }
-
-// type Collection struct {
-// 	Mongo_id     primitive.ObjectID `json:"mongo_id,omitempty"`
-// 	Id           string             `json:"id,omitempty" validate:"required"`
-// 	Stac_version string             `json:"stac_version,omitempty" validate:"required"`
-// 	Description  string             `json:"description,omitempty" validate:"required"`
-// 	Links        Link               `bson:"inline"`
-// }
-
 type Collection struct {
-	Id          string      `json:"id,omitempty"`
-	Stac_object interface{} `json:"stac_object"`
+	StacVersion string        `json:"stac_version,omitempty"`
+	Id          string        `json:"id,omitempty"`
+	Title       string        `json:"title,omitempty"`
+	Description string        `json:"description,omitempty"`
+	Keywords    []string      `json:"keywords,omitempty"`
+	License     string        `json:"license,omitempty"`
+	Providers   []interface{} `json:"providers,omitempty"`
+	Extent      interface{}   `json:"extent,omitempty"`
+	Summaries   interface{}   `json:"summary,omitempty"`
+	Links       []interface{} `json:"links,omitempty"`
+	ItemType    string        `json:"itemType,omitempty"`
+	Crs         []string      `json:"crs,omitempty"`
 }
