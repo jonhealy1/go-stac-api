@@ -10,6 +10,20 @@ services:
       - ./mongo_data:/data/db 
     ports:
       - 27017:27017
+
+  mongo-express:
+    image: mongo-express:latest
+    restart: always 
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: stac
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_SERVER: database
+      ME_CONFIG_MONGODB_PORT: "27017"
+    ports:
+      - "0.0.0.0:8081:8081"
+    depends_on:
+      - database
   
 volumes: 
   mongo_data: 
