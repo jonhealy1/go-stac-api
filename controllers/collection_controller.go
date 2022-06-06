@@ -34,10 +34,10 @@ func CreateCollection(c *fiber.Ctx) error {
 	}
 
 	newCollection := models.Collection{
-		Id:       primitive.NewObjectID(),
-		Name:     user.Name,
-		Location: user.Location,
-		Title:    user.Title,
+		Mongo_id:     primitive.NewObjectID(),
+		Id:           user.Id,
+		Stac_version: user.Stac_version,
+		Description:  user.Description,
 	}
 
 	result, err := userCollection.InsertOne(ctx, newCollection)
@@ -82,7 +82,7 @@ func EditACollection(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
 	}
 
-	update := bson.M{"name": collection.Name, "location": collection.Location, "title": collection.Title}
+	update := bson.M{"id": collection.Id, "stac_version": collection.Stac_version, "description": collection.Description}
 
 	result, err := userCollection.UpdateOne(ctx, bson.M{"id": objId}, bson.M{"$set": update})
 
