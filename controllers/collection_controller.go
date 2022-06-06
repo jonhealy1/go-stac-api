@@ -34,10 +34,12 @@ func CreateCollection(c *fiber.Ctx) error {
 	}
 
 	newCollection := models.Collection{
-		Mongo_id:     primitive.NewObjectID(),
-		Id:           user.Id,
-		Stac_version: user.Stac_version,
-		Description:  user.Description,
+		Id:          user.Id,
+		Stac_object: user.Stac_object,
+		// Id:           user.Id,
+		// Stac_version: user.Stac_version,
+		// Description:  user.Description,
+		// Links:        user.Links,
 	}
 
 	result, err := userCollection.InsertOne(ctx, newCollection)
@@ -56,7 +58,7 @@ func GetACollection(c *fiber.Ctx) error {
 
 	objId, _ := primitive.ObjectIDFromHex(userId)
 
-	err := userCollection.FindOne(ctx, bson.M{"id": objId}).Decode(&collection)
+	err := userCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&collection)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.CollectionResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
@@ -82,7 +84,8 @@ func EditACollection(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
 	}
 
-	update := bson.M{"id": collection.Id, "stac_version": collection.Stac_version, "description": collection.Description}
+	//update := bson.M{"id": collection.Id, "stac_version": collection.Stac_version, "description": collection.Description, "links": collection.Links}
+	update := bson.M{"id": collection.Id, "datum": collection.Stac_object}
 
 	result, err := userCollection.UpdateOne(ctx, bson.M{"id": objId}, bson.M{"$set": update})
 
