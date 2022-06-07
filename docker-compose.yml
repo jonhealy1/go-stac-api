@@ -1,5 +1,22 @@
 version: '3.8'
 services: 
+  api:
+    build: "."
+    restart: always 
+    env_file:
+      - .env
+    # environment: 
+    #   - MONGOURI=mongodb://stac:root@localhost:27017
+    ports:
+      - "6000:6000"
+    expose:
+      - "6000"
+    restart: "always"
+    depends_on:
+      - database
+    links:
+      - database
+
   database:
     image: mongo
     restart: always 
