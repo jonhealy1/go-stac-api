@@ -39,6 +39,7 @@ func CreateCollection(c *fiber.Ctx) error {
 		Description: user.Description,
 		Title:       user.Title,
 		Links:       user.Links,
+		Providers:   user.Providers,
 	}
 
 	result, err := userCollection.InsertOne(ctx, newCollection)
@@ -89,6 +90,7 @@ func EditCollection(c *fiber.Ctx) error {
 		"description":  collection.Description,
 		"title":        collection.Title,
 		"links":        collection.Links,
+		"providers":    collection.Providers,
 	}
 
 	result, err := userCollection.UpdateOne(ctx, bson.M{"id": objId}, bson.M{"$set": update})
