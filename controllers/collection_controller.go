@@ -56,9 +56,7 @@ func GetCollection(c *fiber.Ctx) error {
 	var collection models.Collection
 	defer cancel()
 
-	objId, _ := primitive.ObjectIDFromHex(userId)
-
-	err := userCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&collection)
+	err := userCollection.FindOne(ctx, bson.M{"id": userId}).Decode(&collection)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.CollectionResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
