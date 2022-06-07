@@ -39,6 +39,7 @@ func CreateCollection(c *fiber.Ctx) error {
 		Description: user.Description,
 		Title:       user.Title,
 		Links:       user.Links,
+		Extent:      user.Extent,
 		Providers:   user.Providers,
 	}
 
@@ -88,6 +89,7 @@ func EditCollection(c *fiber.Ctx) error {
 		"description":  collection.Description,
 		"title":        collection.Title,
 		"links":        collection.Links,
+		"extent":       collection.Extent,
 		"providers":    collection.Providers,
 	}
 
