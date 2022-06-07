@@ -37,6 +37,7 @@ func CreateCollection(c *fiber.Ctx) error {
 		Id:          user.Id,
 		StacVersion: user.StacVersion,
 		Description: user.Description,
+		Title:       user.Title,
 		Links:       user.Links,
 	}
 
@@ -48,7 +49,7 @@ func CreateCollection(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).JSON(responses.CollectionResponse{Status: http.StatusCreated, Message: "success", Data: &fiber.Map{"data": result}})
 }
 
-func GetACollection(c *fiber.Ctx) error {
+func GetCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	userId := c.Params("collectionId")
 	var collection models.Collection
@@ -64,7 +65,7 @@ func GetACollection(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": collection}})
 }
 
-func EditACollection(c *fiber.Ctx) error {
+func EditCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	collectionId := c.Params("collectionId")
 	var collection models.Collection
@@ -82,7 +83,13 @@ func EditACollection(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
 	}
 
-	update := bson.M{"id": collection.Id, "stac_version": collection.StacVersion, "description": collection.Description, "links": collection.Links}
+	update := bson.M{
+		"id":           collection.Id,
+		"stac_version": collection.StacVersion,
+		"description":  collection.Description,
+		"title":        collection.Title,
+		"links":        collection.Links,
+	}
 
 	result, err := userCollection.UpdateOne(ctx, bson.M{"id": objId}, bson.M{"$set": update})
 
@@ -102,7 +109,7 @@ func EditACollection(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": updatedCollection}})
 }
 
-func DeleteACollection(c *fiber.Ctx) error {
+func DeleteCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	collectionId := c.Params("collectionId")
 	defer cancel()
@@ -125,7 +132,7 @@ func DeleteACollection(c *fiber.Ctx) error {
 	)
 }
 
-func GetAllCollections(c *fiber.Ctx) error {
+func GetCollections(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var users []models.Collection
 	defer cancel()
