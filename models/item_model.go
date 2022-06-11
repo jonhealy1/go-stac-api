@@ -2,16 +2,13 @@ package models
 
 type Item struct {
 	Id             string        `json:"id,omitempty"`
+	Type           string        `json:"type,omitempty"`
+	Collection     string        `json:"collection,omitempty"`
 	StacVersion    string        `json:"stac_version,omitempty"`
 	StacExtensions []string      `json:"stac_extensions,omitempty"`
-	Title          string        `json:"title,omitempty"`
-	Description    string        `json:"description,omitempty"`
-	Keywords       []string      `json:"keywords,omitempty"`
-	License        string        `json:"license,omitempty"`
-	Providers      []interface{} `json:"providers,omitempty"`
-	Extent         interface{}   `json:"extent,omitempty"`
-	Summaries      interface{}   `json:"summary,omitempty"`
+	Bbox           []float64     `json:"bbox,omitempty"`
+	Geometry       interface{}   `json:"geometry,omitempty"`
+	Properties     interface{}   `json:"properties,omitempty"`
+	Assets         interface{}   `json:"assets,omitempty"`
 	Links          []interface{} `json:"links,omitempty"`
-	ItemType       string        `json:"itemType,omitempty"`
-	Crs            []string      `json:"crs,omitempty"`
 }
