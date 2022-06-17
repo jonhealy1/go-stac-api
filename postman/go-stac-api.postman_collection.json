@@ -44,6 +44,27 @@
 			"response": []
 		},
 		{
+			"name": "Get Item",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:6000/collections/sentinel-s2-l2a-cogs/items/S2B_1CCV_20181004_0_L2A",
+					"host": [
+						"localhost"
+					],
+					"port": "6000",
+					"path": [
+						"collections",
+						"sentinel-s2-l2a-cogs",
+						"items",
+						"S2B_1CCV_20181004_0_L2A"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Delete Collection",
 			"request": {
 				"method": "DELETE",
