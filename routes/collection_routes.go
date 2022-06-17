@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func UserRoute(app *fiber.App) {
+func CollectionRoute(app *fiber.App) {
 	app.Post("/collections", controllers.CreateCollection)
 	app.Get("/collections/:collectionId", controllers.GetCollection)
 	app.Put("/collections/:collectionId", controllers.EditCollection)
