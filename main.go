@@ -14,6 +14,7 @@ func main() {
 	configs.ConnectDB()
 
 	routes.CollectionRoute(app)
+	routes.ItemRoute(app)
 
 	app.Listen(":6000")
 }
