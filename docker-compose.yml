@@ -5,8 +5,6 @@ services:
     restart: always 
     env_file:
       - .env
-    # environment: 
-    #   - MONGOURI=mongodb://stac:root@localhost:27017
     ports:
       - "6000:6000"
     expose:
