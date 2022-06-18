@@ -14,7 +14,10 @@ Testing
 ```$ go test -v ./...```
    
 Swagger/ OpenAPI   
-http://localhost:6001/swagger/index.html#/
+http://localhost:6001/swagger/index.html#/  
+
+Update docs    
+```$ swag init```   
 
 Notes:   
 - this is not a fully functional stac api at this time    
