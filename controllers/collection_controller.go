@@ -30,6 +30,15 @@ func Conformance(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": conformance}})
 }
 
+// CreateCollection godoc
+// @Summary Create a STAC collection
+// @Description Create a collection with a unique ID
+// @Tags Collections
+// @ID post-collection
+// @Accept  json
+// @Produce  json
+// @Param collection body models.Collection true "STAC Collection json"
+// @Router /collections/ [post]
 func CreateCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var collection models.Collection
