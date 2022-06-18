@@ -1,4 +1,30 @@
 basePath: /
+definitions:
+  models.Item:
+    properties:
+      assets: {}
+      bbox:
+        items:
+          type: number
+        type: array
+      collection:
+        type: string
+      geometry: {}
+      id:
+        type: string
+      links:
+        items: {}
+        type: array
+      properties: {}
+      stac_extensions:
+        items:
+          type: string
+        type: array
+      stac_version:
+        type: string
+      type:
+        type: string
+    type: object
 host: localhost:6001
 info:
   contact:
@@ -45,7 +71,11 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Item'
       summary: Get an item
       tags:
       - Items

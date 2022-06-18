@@ -72,6 +72,7 @@ func CreateItem(c *fiber.Ctx) error {
 // @Param itemId path string true "Item ID"
 // @Param collectionId path string true "Collection ID"
 // @Router /collections/{collectionId}/items/{itemId} [get]
+// @Success 200 {object} models.Item
 func GetItem(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	itemId := c.Params("itemId")
