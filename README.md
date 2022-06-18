@@ -4,7 +4,7 @@ STAC api written in go with fiber and mongodb
 To start mongodb on localhost:27017   
 ```$ make database```    
 
-To start the api on localhost:6000   
+To start the api on localhost:6001   
 ```$ make api```   
    
 To use mongo express for viewing the db on localhost:8081   
