@@ -25,33 +25,34 @@ var validate_item = validator.New()
 // @Accept  json
 // @Produce  json
 // @Param collectionId path string true "Collection ID"
+// @Param item body models.Item true "STAC Item json"
 // @Router /collections/{collectionId}/items/ [post]
 func CreateItem(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	var user models.Item
+	var item models.Item
 	defer cancel()
 
 	//validate the request body
-	if err := c.BodyParser(&user); err != nil {
+	if err := c.BodyParser(&item); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
 
 	//use the validator library to validate required fields
-	if validationErr := validate_item.Struct(&user); validationErr != nil {
+	if validationErr := validate_item.Struct(&item); validationErr != nil {
 		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
 	}
 
 	newItem := models.Item{
-		Id:             user.Id,
-		Type:           user.Type,
-		StacVersion:    user.StacVersion,
-		Collection:     user.Collection,
-		StacExtensions: user.StacExtensions,
-		Bbox:           user.Bbox,
-		Geometry:       user.Geometry,
-		Properties:     user.Properties,
-		Assets:         user.Assets,
-		Links:          user.Links,
+		Id:             item.Id,
+		Type:           item.Type,
+		StacVersion:    item.StacVersion,
+		Collection:     item.Collection,
+		StacExtensions: item.StacExtensions,
+		Bbox:           item.Bbox,
+		Geometry:       item.Geometry,
+		Properties:     item.Properties,
+		Assets:         item.Assets,
+		Links:          item.Links,
 	}
 
 	result, err := userItem.InsertOne(ctx, newItem)
