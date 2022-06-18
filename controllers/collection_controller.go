@@ -17,6 +17,19 @@ import (
 var stacCollection *mongo.Collection = configs.GetCollection(configs.DB, "collections")
 var validate = validator.New()
 
+func Conformance(c *fiber.Ctx) error {
+	conformsTo := []string{
+		"http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
+		"http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30",
+		"http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson",
+	}
+	conformance := bson.M{
+		"conformsTo": conformsTo,
+	}
+
+	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": conformance}})
+}
+
 func CreateCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var collection models.Collection
