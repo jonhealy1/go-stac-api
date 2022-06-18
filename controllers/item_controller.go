@@ -17,6 +17,15 @@ import (
 var userItem *mongo.Collection = configs.GetItem(configs.DB, "items")
 var validate_item = validator.New()
 
+// CreateItem godoc
+// @Summary Create a STAC item
+// @Description Create an item with an ID
+// @Tags Items
+// @ID post-item
+// @Accept  json
+// @Produce  json
+// @Param collectionId path string true "Collection ID"
+// @Router /collections/{collectionId}/items/ [post]
 func CreateItem(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var user models.Item
@@ -53,11 +62,21 @@ func CreateItem(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).JSON(responses.ItemResponse{Status: http.StatusCreated, Message: "success", Data: &fiber.Map{"data": result}})
 }
 
+// GetItem godoc
+// @Summary Get an item
+// @Description Get an item by its ID
+// @Tags Items
+// @ID get-item-by-id
+// @Accept  json
+// @Produce  json
+// @Param itemId path string true "Item ID"
+// @Param collectionId path string true "Collection ID"
+// @Router /collections/{collectionId}/items/{itemId} [get]
 func GetItem(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	itemId := c.Params("itemId")
 	collectionId := c.Params("collectionId")
-	var item models.Collection
+	var item models.Item
 	defer cancel()
 
 	err := userItem.FindOne(ctx, bson.M{"id": itemId, "collection": collectionId}).Decode(&item)
