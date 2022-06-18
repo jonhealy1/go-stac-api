@@ -12,10 +12,13 @@ To use mongo express for viewing the db on localhost:8081
 
 Testing    
 ```$ go test -v ./...```
+   
+Swagger/ OpenAPI   
+http://localhost:6001/swagger/index.html#/
 
 Notes:   
 - this is not a fully functional stac api at this time    
 - checkout the postman collection to test and see what works
 https://documenter.getpostman.com/view/12888943/UzBjtU96
 
-![Alt text](data/postman_curl.png?raw=true "Postman Docs")
+![Alt text](data/swagger.png?raw=true "Postman Docs")
