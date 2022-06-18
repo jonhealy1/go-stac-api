@@ -1,0 +1,129 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "STAC api written in go with fiber and mongodb",
+        "title": "go-stac-api",
+        "contact": {
+            "name": "Jonathan Healy",
+            "email": "jonathan.d.healy@gmail.com"
+        },
+        "version": "0.0"
+    },
+    "host": "localhost:6001",
+    "basePath": "/",
+    "paths": {
+        "/collections/{collectionId}/items/": {
+            "post": {
+                "description": "Create an item with an ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Create a STAC item",
+                "operationId": "post-item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Collection ID",
+                        "name": "collectionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "STAC Item json",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Item"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/collections/{collectionId}/items/{itemId}": {
+            "get": {
+                "description": "Get an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get an item",
+                "operationId": "get-item-by-id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Collection ID",
+                        "name": "collectionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Item"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Item": {
+            "type": "object",
+            "properties": {
+                "assets": {},
+                "bbox": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "collection": {
+                    "type": "string"
+                },
+                "geometry": {},
+                "id": {
+                    "type": "string"
+                },
+                "links": {
+                    "type": "array",
+                    "items": {}
+                },
+                "properties": {},
+                "stac_extensions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "stac_version": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

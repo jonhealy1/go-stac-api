@@ -1,0 +1,88 @@
+basePath: /
+definitions:
+  models.Item:
+    properties:
+      assets: {}
+      bbox:
+        items:
+          type: number
+        type: array
+      collection:
+        type: string
+      geometry: {}
+      id:
+        type: string
+      links:
+        items: {}
+        type: array
+      properties: {}
+      stac_extensions:
+        items:
+          type: string
+        type: array
+      stac_version:
+        type: string
+      type:
+        type: string
+    type: object
+host: localhost:6001
+info:
+  contact:
+    email: jonathan.d.healy@gmail.com
+    name: Jonathan Healy
+  description: STAC api written in go with fiber and mongodb
+  title: go-stac-api
+  version: "0.0"
+paths:
+  /collections/{collectionId}/items/:
+    post:
+      consumes:
+      - application/json
+      description: Create an item with an ID
+      operationId: post-item
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collectionId
+        required: true
+        type: string
+      - description: STAC Item json
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.Item'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create a STAC item
+      tags:
+      - Items
+  /collections/{collectionId}/items/{itemId}:
+    get:
+      consumes:
+      - application/json
+      description: Get an item by its ID
+      operationId: get-item-by-id
+      parameters:
+      - description: Item ID
+        in: path
+        name: itemId
+        required: true
+        type: string
+      - description: Collection ID
+        in: path
+        name: collectionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Item'
+      summary: Get an item
+      tags:
+      - Items
+swagger: "2.0"
