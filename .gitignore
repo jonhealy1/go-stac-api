@@ -15,6 +15,7 @@
 # vendor/
 
 .env
+/.vscode
 
 /mongo_data
 
