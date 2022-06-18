@@ -8,7 +8,10 @@ To start the api on localhost:6000
 ```$ make api```   
    
 To use mongo express for viewing the db on localhost:8081   
-```$ make express```
+```$ make express```   
+
+Testing    
+```$ go test -v ./...```
 
 Notes:   
 - this is not a fully functional stac api at this time    
