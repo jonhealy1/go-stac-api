@@ -1,5 +1,36 @@
 basePath: /
 definitions:
+  models.Collection:
+    properties:
+      crs:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      extent: {}
+      id:
+        type: string
+      itemType:
+        type: string
+      keywords:
+        items:
+          type: string
+        type: array
+      license:
+        type: string
+      links:
+        items: {}
+        type: array
+      providers:
+        items: {}
+        type: array
+      stac_version:
+        type: string
+      summary: {}
+      title:
+        type: string
+    type: object
   models.Item:
     properties:
       assets: {}
@@ -34,6 +65,25 @@ info:
   title: go-stac-api
   version: "0.0"
 paths:
+  /collections/:
+    post:
+      consumes:
+      - application/json
+      description: Create a collection with a unique ID
+      operationId: post-collection
+      parameters:
+      - description: STAC Collection json
+        in: body
+        name: collection
+        required: true
+        schema:
+          $ref: '#/definitions/models.Collection'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create a STAC collection
+      tags:
+      - Collections
   /collections/{collectionId}/items/:
     post:
       consumes:

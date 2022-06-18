@@ -19,6 +19,34 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/collections/": {
+            "post": {
+                "description": "Create a collection with a unique ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Create a STAC collection",
+                "operationId": "post-collection",
+                "parameters": [
+                    {
+                        "description": "STAC Collection json",
+                        "name": "collection",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Collection"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/collections/{collectionId}/items/": {
             "post": {
                 "description": "Create an item with an ID",
@@ -96,6 +124,51 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Collection": {
+            "type": "object",
+            "properties": {
+                "crs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "extent": {},
+                "id": {
+                    "type": "string"
+                },
+                "itemType": {
+                    "type": "string"
+                },
+                "keywords": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "license": {
+                    "type": "string"
+                },
+                "links": {
+                    "type": "array",
+                    "items": {}
+                },
+                "providers": {
+                    "type": "array",
+                    "items": {}
+                },
+                "stac_version": {
+                    "type": "string"
+                },
+                "summary": {},
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Item": {
             "type": "object",
             "properties": {
