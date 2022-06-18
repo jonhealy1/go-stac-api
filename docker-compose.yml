@@ -9,7 +9,6 @@ services:
       - "6000:6000"
     expose:
       - "6000"
-    restart: "always"
     depends_on:
       - database
     links:
