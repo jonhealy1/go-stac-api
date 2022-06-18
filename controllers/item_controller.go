@@ -56,10 +56,11 @@ func CreateItem(c *fiber.Ctx) error {
 func GetItem(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	itemId := c.Params("itemId")
+	collectionId := c.Params("collectionId")
 	var item models.Collection
 	defer cancel()
 
-	err := userItem.FindOne(ctx, bson.M{"id": itemId}).Decode(&item)
+	err := userItem.FindOne(ctx, bson.M{"id": itemId, "collection": collectionId}).Decode(&item)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
