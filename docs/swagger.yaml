@@ -46,6 +46,12 @@ paths:
         name: collectionId
         required: true
         type: string
+      - description: STAC Item json
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.Item'
       produces:
       - application/json
       responses: {}

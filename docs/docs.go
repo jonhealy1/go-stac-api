@@ -40,6 +40,15 @@ const docTemplate = `{
                         "name": "collectionId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "STAC Item json",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Item"
+                        }
                     }
                 ],
                 "responses": {}
