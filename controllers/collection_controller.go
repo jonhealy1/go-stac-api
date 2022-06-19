@@ -38,7 +38,7 @@ func Conformance(c *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param collection body models.Collection true "STAC Collection json"
-// @Router /collections/ [post]
+// @Router /collections [post]
 func CreateCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var collection models.Collection
@@ -72,6 +72,16 @@ func CreateCollection(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).JSON(responses.CollectionResponse{Status: http.StatusCreated, Message: "success", Data: &fiber.Map{"data": result}})
 }
 
+// GetCollection godoc
+// @Summary Get a Collection
+// @Description Get a collection by ID
+// @Tags Collections
+// @ID get-collection-by-id
+// @Accept  json
+// @Produce  json
+// @Param collectionId path string true "Collection ID"
+// @Router /collections/{collectionId} [get]
+// @Success 200 {object} models.Collection
 func GetCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	collectionId := c.Params("collectionId")
@@ -86,6 +96,17 @@ func GetCollection(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": collection}})
 }
 
+// EditCollection godoc
+// @Summary Edit a Collection
+// @Description Edit a collection by ID
+// @Tags Collections
+// @ID get-collection-by-id
+// @Accept  json
+// @Produce  json
+// @Param collectionId path string true "Collection ID"
+// @Param collection body models.Collection true "STAC Collection json"
+// @Router /collections/{collectionId} [put]
+// @Success 200 {object} models.Collection
 func EditCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	collectionId := c.Params("collectionId")
@@ -130,6 +151,16 @@ func EditCollection(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": updatedCollection}})
 }
 
+// DeleteCollection godoc
+// @Summary Delete a Collection
+// @Description Delete a collection by ID
+// @Tags Collections
+// @ID delete-collection-by-id
+// @Accept  json
+// @Produce  json
+// @Param collectionId path string true "Collection ID"
+// @Router /collections/{collectionId} [delete]
+// @Success 200 {object} string
 func DeleteCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	collectionId := c.Params("collectionId")
@@ -151,6 +182,15 @@ func DeleteCollection(c *fiber.Ctx) error {
 	)
 }
 
+// GetCollections godoc
+// @Summary Get all Collections
+// @Description Get all Collections
+// @Tags Collections
+// @ID get-all-collections
+// @Accept  json
+// @Produce  json
+// @Router /collections [get]
+// @Success 200 {object} []models.Collection
 func GetCollections(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var collections []models.Collection
