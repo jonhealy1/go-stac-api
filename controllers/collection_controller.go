@@ -100,7 +100,7 @@ func GetCollection(c *fiber.Ctx) error {
 // @Summary Edit a Collection
 // @Description Edit a collection by ID
 // @Tags Collections
-// @ID get-collection-by-id
+// @ID edit-collection
 // @Accept  json
 // @Produce  json
 // @Param collectionId path string true "Collection ID"
