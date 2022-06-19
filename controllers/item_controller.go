@@ -128,3 +128,35 @@ func GetItemCollection(c *fiber.Ctx) error {
 		responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": itemCollection}},
 	)
 }
+
+// DeleteItem godoc
+// @Summary Delete an Item
+// @Description Delete an Item by ID is a specified collection
+// @Tags Items
+// @ID delete-item-by-id
+// @Accept  json
+// @Produce  json
+// @Param itemId path string true "Item ID"
+// @Param collectionId path string true "Collection ID"
+// @Router /collections/{collectionId}/items/{itemId} [delete]
+func DeleteItem(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	itemId := c.Params("itemId")
+	collectionId := c.Params("collectionId")
+	defer cancel()
+
+	result, err := stacItem.DeleteOne(ctx, bson.M{"collection": collectionId, "id": itemId})
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+	}
+
+	if result.DeletedCount < 1 {
+		return c.Status(http.StatusNotFound).JSON(
+			responses.CollectionResponse{Status: http.StatusNotFound, Message: "error", Data: &fiber.Map{"data": "Item with specified ID in collection not found!"}},
+		)
+	}
+
+	return c.Status(http.StatusOK).JSON(
+		responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": "Item successfully deleted!"}},
+	)
+}
