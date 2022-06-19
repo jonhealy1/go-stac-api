@@ -17,6 +17,33 @@ import (
 var stacCollection *mongo.Collection = configs.GetCollection(configs.DB, "collections")
 var validate = validator.New()
 
+func Root(c *fiber.Ctx) error {
+	links := []models.Link{
+		{
+			Rel:   "self",
+			Type:  "application/json",
+			Href:  "/",
+			Title: "root catalog",
+		},
+		{
+			Rel:   "children",
+			Type:  "application/json",
+			Href:  "/collections",
+			Title: "stac child collections",
+		},
+	}
+
+	rootCatalog := models.Root{
+		Id:          "test-catalog",
+		StacVersion: "1.0.0",
+		Description: "test catalog for go-stac-api, please edit",
+		Title:       "go-stac-api",
+		Links:       links,
+	}
+
+	return c.Status(http.StatusOK).JSON(&fiber.Map{"data": rootCatalog})
+}
+
 func Conformance(c *fiber.Ctx) error {
 	conformsTo := []string{
 		"http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
@@ -27,7 +54,7 @@ func Conformance(c *fiber.Ctx) error {
 		"conformsTo": conformsTo,
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": conformance}})
+	return c.Status(http.StatusOK).JSON(&fiber.Map{"data": conformance})
 }
 
 // CreateCollection godoc

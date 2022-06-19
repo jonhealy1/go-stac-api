@@ -34,12 +34,12 @@ func CreateItem(c *fiber.Ctx) error {
 
 	//validate the request body
 	if err := c.BodyParser(&item); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+		return c.Status(http.StatusBadRequest).JSON(responses.ItemResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
 
 	//use the validator library to validate required fields
 	if validationErr := validate_item.Struct(&item); validationErr != nil {
-		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
+		return c.Status(http.StatusBadRequest).JSON(responses.ItemResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
 	}
 
 	newItem := models.Item{
@@ -125,7 +125,7 @@ func GetItemCollection(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(
-		responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": itemCollection}},
+		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": itemCollection}},
 	)
 }
 
@@ -152,12 +152,12 @@ func DeleteItem(c *fiber.Ctx) error {
 
 	if result.DeletedCount < 1 {
 		return c.Status(http.StatusNotFound).JSON(
-			responses.CollectionResponse{Status: http.StatusNotFound, Message: "error", Data: &fiber.Map{"data": "Item with specified ID in collection not found!"}},
+			responses.ItemResponse{Status: http.StatusNotFound, Message: "error", Data: &fiber.Map{"data": "Item with specified ID in collection not found!"}},
 		)
 	}
 
 	return c.Status(http.StatusOK).JSON(
-		responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": "Item successfully deleted!"}},
+		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": "Item successfully deleted!"}},
 	)
 }
 
@@ -182,12 +182,12 @@ func EditItem(c *fiber.Ctx) error {
 
 	//validate the request body
 	if err := c.BodyParser(&item); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+		return c.Status(http.StatusBadRequest).JSON(responses.ItemResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
 
 	//use the validator library to validate required fields
 	if validationErr := validate.Struct(&item); validationErr != nil {
-		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
+		return c.Status(http.StatusBadRequest).JSON(responses.ItemResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
 	}
 
 	update := bson.M{
