@@ -26,7 +26,7 @@ var validate_item = validator.New()
 // @Produce  json
 // @Param collectionId path string true "Collection ID"
 // @Param item body models.Item true "STAC Item json"
-// @Router /collections/{collectionId}/items/ [post]
+// @Router /collections/{collectionId}/items [post]
 func CreateItem(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var item models.Item

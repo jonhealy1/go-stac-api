@@ -19,7 +19,157 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/collections/{collectionId}/items/": {
+        "/collections": {
+            "get": {
+                "description": "Get all Collections",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Get all Collections",
+                "operationId": "get-all-collections",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Collection"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a collection with a unique ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Create a STAC collection",
+                "operationId": "post-collection",
+                "parameters": [
+                    {
+                        "description": "STAC Collection json",
+                        "name": "collection",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Collection"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/collections/{collectionId}": {
+            "get": {
+                "description": "Get a collection by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Get a Collection",
+                "operationId": "get-collection-by-id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Collection ID",
+                        "name": "collectionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Collection"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Edit a collection by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Edit a Collection",
+                "operationId": "get-collection-by-id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Collection ID",
+                        "name": "collectionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "STAC Collection json",
+                        "name": "collection",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Collection"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Collection"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a collection by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Delete a Collection",
+                "operationId": "delete-collection-by-id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Collection ID",
+                        "name": "collectionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/collections/{collectionId}/items": {
             "post": {
                 "description": "Create an item with an ID",
                 "consumes": [
@@ -96,6 +246,51 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Collection": {
+            "type": "object",
+            "properties": {
+                "crs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "extent": {},
+                "id": {
+                    "type": "string"
+                },
+                "itemType": {
+                    "type": "string"
+                },
+                "keywords": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "license": {
+                    "type": "string"
+                },
+                "links": {
+                    "type": "array",
+                    "items": {}
+                },
+                "providers": {
+                    "type": "array",
+                    "items": {}
+                },
+                "stac_version": {
+                    "type": "string"
+                },
+                "summary": {},
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Item": {
             "type": "object",
             "properties": {

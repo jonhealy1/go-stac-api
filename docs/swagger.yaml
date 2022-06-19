@@ -1,5 +1,36 @@
 basePath: /
 definitions:
+  models.Collection:
+    properties:
+      crs:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      extent: {}
+      id:
+        type: string
+      itemType:
+        type: string
+      keywords:
+        items:
+          type: string
+        type: array
+      license:
+        type: string
+      links:
+        items: {}
+        type: array
+      providers:
+        items: {}
+        type: array
+      stac_version:
+        type: string
+      summary: {}
+      title:
+        type: string
+    type: object
   models.Item:
     properties:
       assets: {}
@@ -34,7 +65,109 @@ info:
   title: go-stac-api
   version: "0.0"
 paths:
-  /collections/{collectionId}/items/:
+  /collections:
+    get:
+      consumes:
+      - application/json
+      description: Get all Collections
+      operationId: get-all-collections
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Collection'
+            type: array
+      summary: Get all Collections
+      tags:
+      - Collections
+    post:
+      consumes:
+      - application/json
+      description: Create a collection with a unique ID
+      operationId: post-collection
+      parameters:
+      - description: STAC Collection json
+        in: body
+        name: collection
+        required: true
+        schema:
+          $ref: '#/definitions/models.Collection'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create a STAC collection
+      tags:
+      - Collections
+  /collections/{collectionId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a collection by ID
+      operationId: delete-collection-by-id
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collectionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete a Collection
+      tags:
+      - Collections
+    get:
+      consumes:
+      - application/json
+      description: Get a collection by ID
+      operationId: get-collection-by-id
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collectionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Collection'
+      summary: Get a Collection
+      tags:
+      - Collections
+    put:
+      consumes:
+      - application/json
+      description: Edit a collection by ID
+      operationId: get-collection-by-id
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collectionId
+        required: true
+        type: string
+      - description: STAC Collection json
+        in: body
+        name: collection
+        required: true
+        schema:
+          $ref: '#/definitions/models.Collection'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Collection'
+      summary: Edit a Collection
+      tags:
+      - Collections
+  /collections/{collectionId}/items:
     post:
       consumes:
       - application/json
