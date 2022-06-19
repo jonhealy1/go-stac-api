@@ -153,7 +153,7 @@ paths:
       consumes:
       - application/json
       description: Edit a collection by ID
-      operationId: get-collection-by-id
+      operationId: edit-collection
       parameters:
       - description: Collection ID
         in: path
@@ -270,4 +270,36 @@ paths:
       summary: Get an item
       tags:
       - Items
+    put:
+      consumes:
+      - application/json
+      description: Edit a stac item by ID
+      operationId: edit-item
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collectionId
+        required: true
+        type: string
+      - description: Item ID
+        in: path
+        name: itemId
+        required: true
+        type: string
+      - description: STAC Collection json
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/models.Item'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Item'
+      summary: Edit an Item
+      tags:
+      - Collections
 swagger: "2.0"

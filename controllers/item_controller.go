@@ -160,3 +160,63 @@ func DeleteItem(c *fiber.Ctx) error {
 		responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": "Item successfully deleted!"}},
 	)
 }
+
+// EditItem godoc
+// @Summary Edit an Item
+// @Description Edit a stac item by ID
+// @Tags Collections
+// @ID edit-item
+// @Accept  json
+// @Produce  json
+// @Param collectionId path string true "Collection ID"
+// @Param itemId path string true "Item ID"
+// @Param item body models.Item true "STAC Collection json"
+// @Router /collections/{collectionId}/items/{itemId} [put]
+// @Success 200 {object} models.Item
+func EditItem(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	collectionId := c.Params("collectionId")
+	itemId := c.Params("itemId")
+	var item models.Item
+	defer cancel()
+
+	//validate the request body
+	if err := c.BodyParser(&item); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+	}
+
+	//use the validator library to validate required fields
+	if validationErr := validate.Struct(&item); validationErr != nil {
+		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
+	}
+
+	update := bson.M{
+		"id":              item.Id,
+		"type":            item.Type,
+		"stac_version":    item.StacVersion,
+		"collection":      item.Collection,
+		"stac_extensions": item.StacExtensions,
+		"bbox":            item.Bbox,
+		"geometry":        item.Geometry,
+		"properties":      item.Properties,
+		"assets":          item.Assets,
+		"links":           item.Links,
+	}
+
+	result, err := stacItem.UpdateOne(ctx, bson.M{"collection": collectionId, "id": itemId}, bson.M{"$set": update})
+
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+	}
+
+	var updatedItem models.Item
+	if result.MatchedCount == 1 {
+		err := stacItem.FindOne(ctx, bson.M{"collection": collectionId, "id": itemId}).Decode(&updatedItem)
+
+		if err != nil {
+			return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+		}
+	}
+
+	return c.Status(http.StatusOK).JSON(responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": updatedItem}})
+}
