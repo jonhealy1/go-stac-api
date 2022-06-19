@@ -160,7 +160,6 @@ func EditCollection(c *fiber.Ctx) error {
 // @Produce  json
 // @Param collectionId path string true "Collection ID"
 // @Router /collections/{collectionId} [delete]
-// @Success 200 {object} string
 func DeleteCollection(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	collectionId := c.Params("collectionId")
