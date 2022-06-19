@@ -222,6 +222,28 @@ paths:
       tags:
       - Items
   /collections/{collectionId}/items/{itemId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an Item by ID is a specified collection
+      operationId: delete-item-by-id
+      parameters:
+      - description: Item ID
+        in: path
+        name: itemId
+        required: true
+        type: string
+      - description: Collection ID
+        in: path
+        name: collectionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete an Item
+      tags:
+      - Items
     get:
       consumes:
       - application/json
