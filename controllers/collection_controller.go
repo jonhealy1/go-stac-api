@@ -40,7 +40,8 @@ func Root(c *fiber.Ctx) error {
 		Title:       "go-stac-api",
 		Links:       links,
 	}
-	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": rootCatalog}})
+
+	return c.Status(http.StatusOK).JSON(&fiber.Map{"data": rootCatalog})
 }
 
 func Conformance(c *fiber.Ctx) error {
@@ -53,7 +54,7 @@ func Conformance(c *fiber.Ctx) error {
 		"conformsTo": conformsTo,
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": conformance}})
+	return c.Status(http.StatusOK).JSON(&fiber.Map{"data": conformance})
 }
 
 // CreateCollection godoc
