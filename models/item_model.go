@@ -12,3 +12,8 @@ type Item struct {
 	Assets         interface{}   `json:"assets,omitempty"`
 	Links          []interface{} `json:"links,omitempty"`
 }
+
+type ItemCollection struct {
+	Type     string `json:"type,omitempty"`
+	Features []Item `json:"features,omitempty"`
+}

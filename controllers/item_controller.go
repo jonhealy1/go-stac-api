@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var userItem *mongo.Collection = configs.GetItem(configs.DB, "items")
+var stacItem *mongo.Collection = configs.GetItem(configs.DB, "items")
 var validate_item = validator.New()
 
 // CreateItem godoc
@@ -55,7 +55,7 @@ func CreateItem(c *fiber.Ctx) error {
 		Links:          item.Links,
 	}
 
-	result, err := userItem.InsertOne(ctx, newItem)
+	result, err := stacItem.InsertOne(ctx, newItem)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
@@ -81,10 +81,50 @@ func GetItem(c *fiber.Ctx) error {
 	var item models.Item
 	defer cancel()
 
-	err := userItem.FindOne(ctx, bson.M{"id": itemId, "collection": collectionId}).Decode(&item)
+	err := stacItem.FindOne(ctx, bson.M{"id": itemId, "collection": collectionId}).Decode(&item)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
 
 	return c.Status(http.StatusOK).JSON(responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": item}})
+}
+
+// GetItemCollection godoc
+// @Summary Get all Items from a Collection
+// @Description Get all Items with a Collection ID
+// @Tags ItemCollection
+// @ID get-item-collection
+// @Accept  json
+// @Produce  json
+// @Param collectionId path string true "Collection ID"
+// @Router /collections/{collectionId}/items [get]
+// @Success 200 {object} models.ItemCollection
+func GetItemCollection(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	var items []models.Item
+	defer cancel()
+
+	results, err := stacItem.Find(ctx, bson.M{})
+
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+	}
+
+	defer results.Close(ctx)
+	for results.Next(ctx) {
+		var singleItem models.Item
+		if err = results.Decode(&singleItem); err != nil {
+			return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+		}
+
+		items = append(items, singleItem)
+	}
+	itemCollection := models.ItemCollection{
+		Type:     "FeatureCollection",
+		Features: items,
+	}
+
+	return c.Status(http.StatusOK).JSON(
+		responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": itemCollection}},
+	)
 }
