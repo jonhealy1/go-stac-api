@@ -170,6 +170,37 @@ const docTemplate = `{
             }
         },
         "/collections/{collectionId}/items": {
+            "get": {
+                "description": "Get all Items with a Collection ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ItemCollection"
+                ],
+                "summary": "Get all Items from a Collection",
+                "operationId": "get-item-collection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Collection ID",
+                        "name": "collectionId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ItemCollection"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create an item with an ID",
                 "consumes": [
@@ -321,6 +352,20 @@ const docTemplate = `{
                 },
                 "stac_version": {
                     "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ItemCollection": {
+            "type": "object",
+            "properties": {
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Item"
+                    }
                 },
                 "type": {
                     "type": "string"

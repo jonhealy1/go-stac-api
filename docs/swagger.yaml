@@ -56,6 +56,15 @@ definitions:
       type:
         type: string
     type: object
+  models.ItemCollection:
+    properties:
+      features:
+        items:
+          $ref: '#/definitions/models.Item'
+        type: array
+      type:
+        type: string
+    type: object
 host: localhost:6001
 info:
   contact:
@@ -168,6 +177,27 @@ paths:
       tags:
       - Collections
   /collections/{collectionId}/items:
+    get:
+      consumes:
+      - application/json
+      description: Get all Items with a Collection ID
+      operationId: get-item-collection
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collectionId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ItemCollection'
+      summary: Get all Items from a Collection
+      tags:
+      - ItemCollection
     post:
       consumes:
       - application/json
