@@ -116,7 +116,7 @@ const docTemplate = `{
                     "Collections"
                 ],
                 "summary": "Edit a Collection",
-                "operationId": "get-collection-by-id",
+                "operationId": "edit-collection",
                 "parameters": [
                     {
                         "type": "string",
@@ -263,6 +263,53 @@ const docTemplate = `{
                         "name": "collectionId",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Item"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Edit a stac item by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Collections"
+                ],
+                "summary": "Edit an Item",
+                "operationId": "edit-item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Collection ID",
+                        "name": "collectionId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Item ID",
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "STAC Collection json",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Item"
+                        }
                     }
                 ],
                 "responses": {
