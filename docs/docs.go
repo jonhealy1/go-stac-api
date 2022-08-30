@@ -430,6 +430,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Context": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "returned": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Item": {
             "type": "object",
             "properties": {
@@ -469,6 +480,9 @@ const docTemplate = `{
         "models.ItemCollection": {
             "type": "object",
             "properties": {
+                "context": {
+                    "$ref": "#/definitions/models.Context"
+                },
                 "features": {
                     "type": "array",
                     "items": {
@@ -500,14 +514,20 @@ const docTemplate = `{
         "models.Search": {
             "type": "object",
             "properties": {
-                "collection": {
-                    "type": "string"
+                "collections": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "ids": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "limit": {
+                    "type": "integer"
                 }
             }
         }
