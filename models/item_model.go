@@ -13,7 +13,13 @@ type Item struct {
 	Links          []interface{} `json:"links,omitempty"`
 }
 
+type Context struct {
+	Returned int `json:"returned,omitempty"`
+	Limit    int `json:"limit,omitempty"`
+}
+
 type ItemCollection struct {
-	Type     string `json:"type,omitempty"`
-	Features []Item `json:"features,omitempty"`
+	Type     string  `json:"type,omitempty"`
+	Context  Context `json:"context,omitempty"`
+	Features []Item  `json:"features,omitempty"`
 }

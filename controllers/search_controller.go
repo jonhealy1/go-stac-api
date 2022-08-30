@@ -61,22 +61,28 @@ func PostSearch(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
 	defer results.Close(ctx)
+	count := 0
 	for results.Next(ctx) {
 		var singleItem models.Item
 		if err = results.Decode(&singleItem); err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 		}
 		items = append(items, singleItem)
+		count = count + 1
+	}
+
+	context := models.Context{
+		Returned: count,
+		Limit:    limit,
 	}
 
 	itemCollection := models.ItemCollection{
 		Type:     "FeatureCollection",
+		Context:  context,
 		Features: items,
 	}
 
 	return c.Status(http.StatusOK).JSON(
-		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": itemCollection}},
+		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"results": itemCollection}},
 	)
-
-	//return c.Status(http.StatusOK).JSON(responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": results}})
 }
