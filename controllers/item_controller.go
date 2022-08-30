@@ -12,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var stacItem *mongo.Collection = configs.GetItem(configs.DB, "items")
@@ -104,13 +105,18 @@ func GetItemCollection(c *fiber.Ctx) error {
 	var items []models.Item
 	defer cancel()
 
-	results, err := stacItem.Find(ctx, bson.M{})
+	collectionId := c.Params("collectionId")
+
+	limit := 100
+	opts := options.Find().SetLimit(int64(limit))
+	results, err := stacItem.Find(ctx, bson.M{"collection": collectionId}, opts)
 
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
 
 	defer results.Close(ctx)
+	count := 0
 	for results.Next(ctx) {
 		var singleItem models.Item
 		if err = results.Decode(&singleItem); err != nil {
@@ -118,14 +124,22 @@ func GetItemCollection(c *fiber.Ctx) error {
 		}
 
 		items = append(items, singleItem)
+		count = count + 1
 	}
+
+	context := models.Context{
+		Returned: count,
+		Limit:    limit,
+	}
+
 	itemCollection := models.ItemCollection{
 		Type:     "FeatureCollection",
+		Context:  context,
 		Features: items,
 	}
 
 	return c.Status(http.StatusOK).JSON(
-		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": itemCollection}},
+		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"results": itemCollection}},
 	)
 }
 

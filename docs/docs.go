@@ -352,6 +352,34 @@ const docTemplate = `{
                 ],
                 "responses": {}
             }
+        },
+        "/search": {
+            "post": {
+                "description": "Search for STAC items via the Search endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "POST Search request",
+                "operationId": "post-search",
+                "parameters": [
+                    {
+                        "description": "Search body json",
+                        "name": "search",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Search"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {
@@ -385,7 +413,9 @@ const docTemplate = `{
                 },
                 "links": {
                     "type": "array",
-                    "items": {}
+                    "items": {
+                        "$ref": "#/definitions/models.Link"
+                    }
                 },
                 "providers": {
                     "type": "array",
@@ -397,6 +427,17 @@ const docTemplate = `{
                 "summary": {},
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Context": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "returned": {
+                    "type": "integer"
                 }
             }
         },
@@ -439,6 +480,9 @@ const docTemplate = `{
         "models.ItemCollection": {
             "type": "object",
             "properties": {
+                "context": {
+                    "$ref": "#/definitions/models.Context"
+                },
                 "features": {
                     "type": "array",
                     "items": {
@@ -447,6 +491,43 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Link": {
+            "type": "object",
+            "properties": {
+                "href": {
+                    "type": "string"
+                },
+                "rel": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Search": {
+            "type": "object",
+            "properties": {
+                "collections": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
                 }
             }
         }
