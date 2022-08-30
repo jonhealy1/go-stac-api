@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"go-stac-api/models"
 	"go-stac-api/responses"
 	"net/http"
@@ -36,35 +37,27 @@ func PostSearch(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(responses.ItemResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
 	}
 
-	count := 0
+	filter := bson.M{}
 	if search.Collection != "" {
-		results, err := stacItem.Find(ctx, bson.M{"id": bson.M{"$in": search.Ids}, "collection": search.Collection})
-		if err != nil {
+		filter["collection"] = search.Collection
+	}
+	if len(search.Ids) > 0 {
+		filter["id"] = bson.M{"$in": search.Ids}
+	}
+
+	fmt.Println(filter)
+
+	results, err := stacItem.Find(ctx, filter)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+	}
+	defer results.Close(ctx)
+	for results.Next(ctx) {
+		var singleItem models.Item
+		if err = results.Decode(&singleItem); err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 		}
-		defer results.Close(ctx)
-		for results.Next(ctx) {
-			var singleItem models.Item
-			if err = results.Decode(&singleItem); err != nil {
-				return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
-			}
-			count = count + 1
-			items = append(items, singleItem)
-		}
-	} else {
-		results, err := stacItem.Find(ctx, bson.M{"id": bson.M{"$in": search.Ids}})
-		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
-		}
-		defer results.Close(ctx)
-		for results.Next(ctx) {
-			var singleItem models.Item
-			if err = results.Decode(&singleItem); err != nil {
-				return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
-			}
-			count = count + 1
-			items = append(items, singleItem)
-		}
+		items = append(items, singleItem)
 	}
 
 	itemCollection := models.ItemCollection{
@@ -73,7 +66,7 @@ func PostSearch(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(
-		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"count": count, "data": itemCollection}},
+		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": itemCollection}},
 	)
 
 	//return c.Status(http.StatusOK).JSON(responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": results}})
