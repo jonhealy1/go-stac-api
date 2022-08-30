@@ -19,7 +19,7 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param search body models.Search true "Search body json"
-// @Router /search
+// @Router /search [post]
 func PostSearch(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var search models.Search

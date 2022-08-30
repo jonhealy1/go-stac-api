@@ -20,7 +20,8 @@ definitions:
       license:
         type: string
       links:
-        items: {}
+        items:
+          $ref: '#/definitions/models.Link'
         type: array
       providers:
         items: {}
@@ -64,6 +65,26 @@ definitions:
         type: array
       type:
         type: string
+    type: object
+  models.Link:
+    properties:
+      href:
+        type: string
+      rel:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  models.Search:
+    properties:
+      collection:
+        type: string
+      ids:
+        items:
+          type: string
+        type: array
     type: object
 host: localhost:6001
 info:
@@ -302,4 +323,23 @@ paths:
       summary: Edit an Item
       tags:
       - Collections
+  /search:
+    post:
+      consumes:
+      - application/json
+      description: Search for STAC items via the Search endpoint
+      operationId: post-search
+      parameters:
+      - description: Search body json
+        in: body
+        name: search
+        required: true
+        schema:
+          $ref: '#/definitions/models.Search'
+      produces:
+      - application/json
+      responses: {}
+      summary: POST Search request
+      tags:
+      - Search
 swagger: "2.0"
