@@ -10,6 +10,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // PostSearch godoc
@@ -38,8 +39,8 @@ func PostSearch(c *fiber.Ctx) error {
 	}
 
 	filter := bson.M{}
-	if search.Collection != "" {
-		filter["collection"] = search.Collection
+	if len(search.Collections) > 0 {
+		filter["collection"] = bson.M{"$in": search.Collections}
 	}
 	if len(search.Ids) > 0 {
 		filter["id"] = bson.M{"$in": search.Ids}
@@ -47,7 +48,15 @@ func PostSearch(c *fiber.Ctx) error {
 
 	fmt.Println(filter)
 
-	results, err := stacItem.Find(ctx, filter)
+	limit := 0
+	if search.Limit > 0 {
+		limit = search.Limit
+	} else {
+		limit = 100
+	}
+
+	opts := options.Find().SetLimit(int64(limit))
+	results, err := stacItem.Find(ctx, filter, opts)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
 	}
