@@ -14,6 +14,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/klauspost/compress v1.15.6 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/paulmach/go.geojson v1.4.0
 	github.com/stretchr/testify v1.7.2
 	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe // indirect
 	github.com/swaggo/swag v1.8.3
