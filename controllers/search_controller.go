@@ -39,12 +39,29 @@ func PostSearch(c *fiber.Ctx) error {
 	}
 
 	filter := bson.M{}
+	if search.Geometry.Type != "" {
+		if search.Geometry.Type == "Point" {
+			long := search.Geometry.Coordinates[0]
+			lat := search.Geometry.Coordinates[1]
+			filter["geometry"] = bson.M{
+				"$geoIntersects": bson.M{
+					"$geometry": bson.M{
+						"type":        "Point",
+						"coordinates": []float64{long, lat},
+					},
+				},
+			}
+		}
+	}
 	if len(search.Collections) > 0 {
 		filter["collection"] = bson.M{"$in": search.Collections}
 	}
 	if len(search.Ids) > 0 {
 		filter["id"] = bson.M{"$in": search.Ids}
 	}
+	// if len(search.Bbox) > 0 {
+	// 	filter["geometry"] = bson.M{"$geoIntersects": {"$geometry": geom}}
+	// }
 
 	fmt.Println(filter)
 
