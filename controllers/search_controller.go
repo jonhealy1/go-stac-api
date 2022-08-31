@@ -41,8 +41,6 @@ func PostSearch(c *fiber.Ctx) error {
 
 	filter := bson.M{}
 
-	fmt.Println(search.Geometry.Type)
-
 	if search.Geometry.Type == "Point" {
 		geom := models.GeoJSONPoint{}.Coordinates
 		json.Unmarshal(search.Geometry.Coordinates, &geom)
@@ -71,9 +69,7 @@ func PostSearch(c *fiber.Ctx) error {
 		}
 	}
 
-	fmt.Println(search.GeometryCollection.Type)
 	if search.GeometryCollection.Type == "GeometryCollection" {
-
 		for _, geometryJSON := range search.GeometryCollection.Geometries {
 			generic := models.GeoJSONGenericGeometry{}
 			json.Unmarshal(geometryJSON, &generic)
@@ -81,7 +77,6 @@ func PostSearch(c *fiber.Ctx) error {
 			case "MultiPolygon":
 				geom := models.GeoJSONMultiPolygon{}
 				json.Unmarshal(geometryJSON, &geom)
-				// You can now use the multiPolygon
 				filter["geometry"] = bson.M{
 					"$geoIntersects": bson.M{
 						"$geometry": bson.M{
@@ -94,7 +89,6 @@ func PostSearch(c *fiber.Ctx) error {
 			case "Polygon", "MultiLine":
 				geom := models.GeoJSONPolygon{}
 				json.Unmarshal(geometryJSON, &geom)
-				// You can now use the polygon
 				filter["geometry"] = bson.M{
 					"$geoIntersects": bson.M{
 						"$geometry": bson.M{
@@ -107,7 +101,6 @@ func PostSearch(c *fiber.Ctx) error {
 			case "Line", "MultiPoint":
 				geom := models.GeoJSONLine{}
 				json.Unmarshal(geometryJSON, &geom)
-				// You can now use the line
 				filter["geometry"] = bson.M{
 					"$geoIntersects": bson.M{
 						"$geometry": bson.M{
@@ -120,7 +113,6 @@ func PostSearch(c *fiber.Ctx) error {
 			case "Point":
 				geom := models.GeoJSONPoint{}
 				json.Unmarshal(geometryJSON, &geom)
-				// You can now use the point
 				filter["geometry"] = bson.M{
 					"$geoIntersects": bson.M{
 						"$geometry": bson.M{
