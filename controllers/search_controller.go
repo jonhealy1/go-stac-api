@@ -40,12 +40,41 @@ func PostSearch(c *fiber.Ctx) error {
 	}
 
 	filter := bson.M{}
-	if search.Geometry.Type == "GeometryCollection" {
-		// Assume the variable geoJSON is a []byte with valid geojson
-		// geoJSONGeometryCollection := GeoJSONGeometryCollection{}
-		// json.Unmarshal(geoJSON, &geoJSONGeometryCollection)
 
-		for _, geometryJSON := range search.Geometry.Geometries {
+	fmt.Println(search.Geometry.Type)
+
+	if search.Geometry.Type == "Point" {
+		geom := models.GeoJSONPoint{}.Coordinates
+		json.Unmarshal(search.Geometry.Coordinates, &geom)
+		fmt.Println(geom)
+		filter["geometry"] = bson.M{
+			"$geoIntersects": bson.M{
+				"$geometry": bson.M{
+					"type":        search.Geometry.Type,
+					"coordinates": geom,
+				},
+			},
+		}
+	}
+
+	if search.Geometry.Type == "Polygon" {
+		geom := models.GeoJSONPolygon{}.Coordinates
+		json.Unmarshal(search.Geometry.Coordinates, &geom)
+		fmt.Println(geom)
+		filter["geometry"] = bson.M{
+			"$geoIntersects": bson.M{
+				"$geometry": bson.M{
+					"type":        search.Geometry.Type,
+					"coordinates": geom,
+				},
+			},
+		}
+	}
+
+	fmt.Println(search.GeometryCollection.Type)
+	if search.GeometryCollection.Type == "GeometryCollection" {
+
+		for _, geometryJSON := range search.GeometryCollection.Geometries {
 			generic := models.GeoJSONGenericGeometry{}
 			json.Unmarshal(geometryJSON, &generic)
 			switch generic.Type {
@@ -102,15 +131,12 @@ func PostSearch(c *fiber.Ctx) error {
 				}
 			}
 		}
-		if len(search.Collections) > 0 {
-			filter["collection"] = bson.M{"$in": search.Collections}
-		}
-		if len(search.Ids) > 0 {
-			filter["id"] = bson.M{"$in": search.Ids}
-		}
-		// if len(search.Bbox) > 0 {
-		// 	filter["geometry"] = bson.M{"$geoIntersects": {"$geometry": geom}}
-		// }
+	}
+	if len(search.Collections) > 0 {
+		filter["collection"] = bson.M{"$in": search.Collections}
+	}
+	if len(search.Ids) > 0 {
+		filter["id"] = bson.M{"$in": search.Ids}
 	}
 	fmt.Println(filter)
 
