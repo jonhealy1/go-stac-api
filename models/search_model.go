@@ -3,11 +3,12 @@ package models
 import "encoding/json"
 
 type Search struct {
-	Ids         []string                  `json:"ids,omitempty"`
-	Collections []string                  `json:"collections,omitempty"`
-	Limit       int                       `json:"limit,omitempty"`
-	Bbox        []float64                 `json:"bbox,omitempty"`
-	Geometry    GeoJSONGeometryCollection `json:"geometry,omitempty"`
+	Ids                []string                  `json:"ids,omitempty"`
+	Collections        []string                  `json:"collections,omitempty"`
+	Limit              int                       `json:"limit,omitempty"`
+	Bbox               []float64                 `json:"bbox,omitempty"`
+	Geometry           GeoJSONGenericGeometry    `json:"geometry,omitempty"`
+	GeometryCollection GeoJSONGeometryCollection `json:"geometrycollection,omitempty"`
 }
 
 type GeoJSONGeometryCollection struct {
