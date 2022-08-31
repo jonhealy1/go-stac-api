@@ -441,6 +441,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.GeoJson": {
+            "type": "object",
+            "properties": {
+                "coordinates": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Item": {
             "type": "object",
             "properties": {
@@ -514,11 +528,20 @@ const docTemplate = `{
         "models.Search": {
             "type": "object",
             "properties": {
+                "bbox": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
                 "collections": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "geometry": {
+                    "$ref": "#/definitions/models.GeoJson"
                 },
                 "ids": {
                     "type": "array",

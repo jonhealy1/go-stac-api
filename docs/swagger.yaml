@@ -39,6 +39,15 @@ definitions:
       returned:
         type: integer
     type: object
+  models.GeoJson:
+    properties:
+      coordinates:
+        items:
+          type: number
+        type: array
+      type:
+        type: string
+    type: object
   models.Item:
     properties:
       assets: {}
@@ -88,10 +97,16 @@ definitions:
     type: object
   models.Search:
     properties:
+      bbox:
+        items:
+          type: number
+        type: array
       collections:
         items:
           type: string
         type: array
+      geometry:
+        $ref: '#/definitions/models.GeoJson'
       ids:
         items:
           type: string
