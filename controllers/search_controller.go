@@ -44,7 +44,6 @@ func PostSearch(c *fiber.Ctx) error {
 	if search.Geometry.Type == "Point" {
 		geom := models.GeoJSONPoint{}.Coordinates
 		json.Unmarshal(search.Geometry.Coordinates, &geom)
-		fmt.Println(geom)
 		filter["geometry"] = bson.M{
 			"$geoIntersects": bson.M{
 				"$geometry": bson.M{
@@ -58,7 +57,6 @@ func PostSearch(c *fiber.Ctx) error {
 	if search.Geometry.Type == "Polygon" {
 		geom := models.GeoJSONPolygon{}.Coordinates
 		json.Unmarshal(search.Geometry.Coordinates, &geom)
-		fmt.Println(geom)
 		filter["geometry"] = bson.M{
 			"$geoIntersects": bson.M{
 				"$geometry": bson.M{
