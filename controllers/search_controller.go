@@ -31,12 +31,12 @@ func PostSearch(c *fiber.Ctx) error {
 
 	//validate the request body
 	if err := c.BodyParser(&search); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(responses.ItemResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+		return c.Status(http.StatusBadRequest).JSON(responses.ItemResponse{Status: http.StatusBadRequest, Message: "error", Data: err.Error()})
 	}
 
 	//use the validator library to validate required fields
 	if validationErr := validate_item.Struct(&search); validationErr != nil {
-		return c.Status(http.StatusBadRequest).JSON(responses.ItemResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
+		return c.Status(http.StatusBadRequest).JSON(responses.ItemResponse{Status: http.StatusBadRequest, Message: "error", Data: validationErr.Error()})
 	}
 
 	filter := bson.M{}
@@ -67,6 +67,19 @@ func PostSearch(c *fiber.Ctx) error {
 		}
 	}
 
+	if search.Geometry.Type == "LineString" {
+		geom := models.GeoJSONLine{}.Coordinates
+		json.Unmarshal(search.Geometry.Coordinates, &geom)
+		filter["geometry"] = bson.M{
+			"$geoIntersects": bson.M{
+				"$geometry": bson.M{
+					"type":        search.Geometry.Type,
+					"coordinates": geom,
+				},
+			},
+		}
+	}
+
 	if search.GeometryCollection.Type == "GeometryCollection" {
 		for _, geometryJSON := range search.GeometryCollection.Geometries {
 			generic := models.GeoJSONGenericGeometry{}
@@ -84,7 +97,7 @@ func PostSearch(c *fiber.Ctx) error {
 					},
 				}
 
-			case "Polygon", "MultiLine":
+			case "Polygon", "MultiLineString":
 				geom := models.GeoJSONPolygon{}
 				json.Unmarshal(geometryJSON, &geom)
 				filter["geometry"] = bson.M{
@@ -96,7 +109,7 @@ func PostSearch(c *fiber.Ctx) error {
 					},
 				}
 
-			case "Line", "MultiPoint":
+			case "LineString", "MultiPoint":
 				geom := models.GeoJSONLine{}
 				json.Unmarshal(geometryJSON, &geom)
 				filter["geometry"] = bson.M{
@@ -140,14 +153,14 @@ func PostSearch(c *fiber.Ctx) error {
 	opts := options.Find().SetLimit(int64(limit))
 	results, err := stacItem.Find(ctx, filter, opts)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 	}
 	defer results.Close(ctx)
 	count := 0
 	for results.Next(ctx) {
 		var singleItem models.Item
 		if err = results.Decode(&singleItem); err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
+			return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 		}
 		items = append(items, singleItem)
 		count = count + 1
@@ -165,6 +178,6 @@ func PostSearch(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(
-		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"results": itemCollection}},
+		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: itemCollection},
 	)
 }
