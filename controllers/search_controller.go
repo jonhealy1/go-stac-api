@@ -67,6 +67,19 @@ func PostSearch(c *fiber.Ctx) error {
 		}
 	}
 
+	if search.Geometry.Type == "LineString" {
+		geom := models.GeoJSONLine{}.Coordinates
+		json.Unmarshal(search.Geometry.Coordinates, &geom)
+		filter["geometry"] = bson.M{
+			"$geoIntersects": bson.M{
+				"$geometry": bson.M{
+					"type":        search.Geometry.Type,
+					"coordinates": geom,
+				},
+			},
+		}
+	}
+
 	if search.GeometryCollection.Type == "GeometryCollection" {
 		for _, geometryJSON := range search.GeometryCollection.Geometries {
 			generic := models.GeoJSONGenericGeometry{}
@@ -84,7 +97,7 @@ func PostSearch(c *fiber.Ctx) error {
 					},
 				}
 
-			case "Polygon", "MultiLine":
+			case "Polygon", "MultiLineString":
 				geom := models.GeoJSONPolygon{}
 				json.Unmarshal(geometryJSON, &geom)
 				filter["geometry"] = bson.M{
@@ -96,7 +109,7 @@ func PostSearch(c *fiber.Ctx) error {
 					},
 				}
 
-			case "Line", "MultiPoint":
+			case "LineString", "MultiPoint":
 				geom := models.GeoJSONLine{}
 				json.Unmarshal(geometryJSON, &geom)
 				filter["geometry"] = bson.M{
