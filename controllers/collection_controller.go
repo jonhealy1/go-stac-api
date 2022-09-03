@@ -41,7 +41,7 @@ func Root(c *fiber.Ctx) error {
 		Links:       links,
 	}
 
-	return c.Status(http.StatusOK).JSON(&fiber.Map{"data": rootCatalog})
+	return c.Status(http.StatusOK).JSON(rootCatalog)
 }
 
 func Conformance(c *fiber.Ctx) error {
