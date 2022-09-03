@@ -54,7 +54,7 @@ func Conformance(c *fiber.Ctx) error {
 		"conformsTo": conformsTo,
 	}
 
-	return c.Status(http.StatusOK).JSON(&fiber.Map{"data": conformance})
+	return c.Status(http.StatusOK).JSON(conformance)
 }
 
 // CreateCollection godoc
