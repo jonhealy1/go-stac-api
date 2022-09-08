@@ -91,12 +91,12 @@ func CreateCollection(c *fiber.Ctx) error {
 		Providers:   collection.Providers,
 	}
 
-	result, err := stacCollection.InsertOne(ctx, newCollection)
+	_, err := stacCollection.InsertOne(ctx, newCollection)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.CollectionResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 	}
 
-	return c.Status(http.StatusCreated).JSON(responses.CollectionResponse{Status: http.StatusCreated, Message: "success", Data: result})
+	return c.Status(http.StatusCreated).JSON(responses.CollectionResponse{Status: http.StatusCreated, Message: "success", Data: newCollection})
 }
 
 // GetCollection godoc
@@ -120,7 +120,7 @@ func GetCollection(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(responses.CollectionResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: collection})
+	return c.Status(http.StatusOK).JSON(collection)
 }
 
 // EditCollection godoc
@@ -239,7 +239,5 @@ func GetCollections(c *fiber.Ctx) error {
 		collections = append(collections, singleCollection)
 	}
 
-	return c.Status(http.StatusOK).JSON(
-		responses.CollectionResponse{Status: http.StatusOK, Message: "success", Data: collections},
-	)
+	return c.Status(http.StatusOK).JSON(collections)
 }
