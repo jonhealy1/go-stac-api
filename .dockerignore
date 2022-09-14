@@ -1,0 +1,15 @@
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.tox
+.coverage
+.coverage.*
+.vscode
+coverage.xml
+*.log
+.git
+.envrc
+cdk*
+
+venv
