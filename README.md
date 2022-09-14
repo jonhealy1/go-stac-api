@@ -24,7 +24,7 @@ Update docs
 
 Notes:   
 - this is not a fully functional stac api at this time    
-- checkout the postman collection to test and see what works
+- a public postman collection is available here:  
 https://documenter.getpostman.com/view/12888943/UzBjtU96
 
 ![Alt text](data/swagger.png?raw=true "Postman Docs")
