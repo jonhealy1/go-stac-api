@@ -81,22 +81,12 @@ func CreateCollection(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(responses.CollectionResponse{Status: http.StatusBadRequest, Message: "error", Data: validationErr.Error()})
 	}
 
-	newCollection := models.Collection{
-		Id:          collection.Id,
-		StacVersion: collection.StacVersion,
-		Description: collection.Description,
-		Title:       collection.Title,
-		Links:       collection.Links,
-		Extent:      collection.Extent,
-		Providers:   collection.Providers,
-	}
-
-	_, err := stacCollection.InsertOne(ctx, newCollection)
+	_, err := stacCollection.InsertOne(ctx, collection)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.CollectionResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 	}
 
-	return c.Status(http.StatusCreated).JSON(responses.CollectionResponse{Status: http.StatusCreated, Message: "success", Data: newCollection})
+	return c.Status(http.StatusCreated).JSON(responses.CollectionResponse{Status: http.StatusCreated, Message: "success", Data: collection})
 }
 
 // GetCollection godoc
