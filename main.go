@@ -5,10 +5,8 @@ import (
 	"go-stac-api/configs"
 	"go-stac-api/routes"
 	"log"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/etag"
@@ -49,7 +47,7 @@ func Setup() *fiber.App {
 
 	app.Use(cors.New())
 	app.Use(compress.New())
-	app.Use(cache.New())
+	// app.Use(cache.New())
 	app.Use(etag.New())
 	app.Use(favicon.New())
 	app.Use(limiter.New(limiter.Config{
@@ -64,13 +62,13 @@ func Setup() *fiber.App {
 	app.Use(logger.New())
 	app.Use(recover.New())
 
-	app.Use(cache.New(cache.Config{
-		Next: func(c *fiber.Ctx) bool {
-			return c.Query("refresh") == "true"
-		},
-		Expiration:   30 * time.Minute,
-		CacheControl: true,
-	}))
+	// app.Use(cache.New(cache.Config{
+	// 	Next: func(c *fiber.Ctx) bool {
+	// 		return c.Query("refresh") == "true"
+	// 	},
+	// 	Expiration:   30 * time.Minute,
+	// 	CacheControl: true,
+	// }))
 
 	routes.CollectionRoute(app)
 	routes.ItemRoute(app)
