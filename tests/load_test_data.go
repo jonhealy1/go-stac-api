@@ -20,7 +20,7 @@ func LoadCollection() {
 
 	responseBody := bytes.NewBuffer(byteValue)
 
-	resp, err := http.Post("http://localhost:6002/collections", "application/json", responseBody)
+	resp, err := http.Post("http://localhost:6001/collections", "application/json", responseBody)
 
 	if err != nil {
 		log.Fatalf("An Error Occured %v", err)
@@ -58,7 +58,7 @@ func LoadItems() {
 	for i < (len(fc.Features) - 50) {
 		test, _ := json.Marshal(fc.Features[i])
 		responseBody := bytes.NewBuffer(test)
-		resp, err := http.Post("http://localhost:6002/collections/sentinel-s2-l2a-cogs-test/items", "application/json", responseBody)
+		resp, err := http.Post("http://localhost:6001/collections/sentinel-s2-l2a-cogs-test/items", "application/json", responseBody)
 		if err != nil {
 			log.Fatalf("An Error Occured %v", err)
 		}
