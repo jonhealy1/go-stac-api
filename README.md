@@ -14,7 +14,7 @@ To use mongo express for viewing the db on localhost:8081 with docker-compose
 ```$ make express```   
 
 Testing    
-```$ go test -v ./...```
+```$ make test```
    
 Swagger/ OpenAPI   
 http://localhost:6001/swagger/index.html#/  
