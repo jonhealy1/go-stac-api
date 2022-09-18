@@ -14,3 +14,7 @@ express:
 down:
 	docker-compose down
 
+.PHONY: test
+test:
+	go test go-stac-api/tests
+
