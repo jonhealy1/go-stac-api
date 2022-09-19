@@ -174,8 +174,6 @@ func TestGetAllCollections(t *testing.T) {
 
 	// Iterate through test single test cases
 	for _, test := range tests {
-		// Create a new http request with the route
-		// from the test case
 		req, _ := http.NewRequest(
 			"GET",
 			test.route,
@@ -213,4 +211,42 @@ func TestGetAllCollections(t *testing.T) {
 		// the err variable should be nil
 		assert.Nilf(t, err, test.description)
 	}
+}
+
+func TestDeleteCollection(t *testing.T) {
+	// Create client
+	client := &http.Client{}
+
+	// Creaate Request
+	req, err := http.NewRequest("DELETE", "/collections/sentinel-s2-l2a-cogs-test", nil)
+	if err != nil {
+		log.Fatalf("An Error Occured %v", err)
+	}
+
+	// Fetch Request
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	assert.Equalf(t, 201, resp.Status, "create collection")
+
+	// Read Response Body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	var collection_response responses.CollectionResponse
+	json.Unmarshal(body, &collection_response)
+
+	assert.Equal(t, "success", collection_response.Message, "create collection")
+
+	// // Display Results
+	// fmt.Println("response Status : ", resp.Status)
+	// fmt.Println("response Headers : ", resp.Header)
+	// fmt.Println("response Body : ", string(respBody))
 }
