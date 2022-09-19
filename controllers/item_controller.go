@@ -87,7 +87,7 @@ func GetItem(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 	}
 
-	return c.Status(http.StatusOK).JSON(responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: item})
+	return c.Status(http.StatusOK).JSON(item)
 }
 
 // GetItemCollection godoc
