@@ -138,9 +138,7 @@ func GetItemCollection(c *fiber.Ctx) error {
 		Features: items,
 	}
 
-	return c.Status(http.StatusOK).JSON(
-		responses.ItemResponse{Status: http.StatusOK, Message: "success", Data: itemCollection},
-	)
+	return c.Status(http.StatusOK).JSON(itemCollection)
 }
 
 // DeleteItem godoc
