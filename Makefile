@@ -16,5 +16,5 @@ down:
 
 .PHONY: test
 test:
-	go test go-stac-api/tests
+	go test go-stac-api/tests -v
 
