@@ -68,7 +68,7 @@ func TestCreateCollection(t *testing.T) {
 	var collection_response responses.CollectionResponse
 	json.Unmarshal(body, &collection_response)
 
-	assert.Equal(t, "success", collection_response.Message, "create collection")
+	assert.Equalf(t, "success", collection_response.Message, "create collection")
 }
 func TestGetCollection(t *testing.T) {
 	LoadCollection()
@@ -82,23 +82,12 @@ func TestGetCollection(t *testing.T) {
 	json.Unmarshal(byteValue, &expected_collection)
 
 	tests := []struct {
-		description string
-
-		// Test input
-		route string
-
-		// Expected output
+		description   string
+		route         string
 		expectedError bool
 		expectedCode  int
 		expectedBody  models.Collection
 	}{
-		{
-			description:   "GET collection route",
-			route:         "/collections/sentinel-s2-l2a-cogs-test",
-			expectedError: false,
-			expectedCode:  200,
-			expectedBody:  expected_collection,
-		},
 		{
 			description:   "GET collection route",
 			route:         "/collections/sentinel-s2-l2a-cogs-test",
@@ -139,6 +128,7 @@ func TestGetCollection(t *testing.T) {
 
 		// Read the response body
 		body, err := ioutil.ReadAll(res.Body)
+		assert.Nilf(t, err, "Create collection")
 
 		var stac_collection models.Collection
 
@@ -155,9 +145,8 @@ func TestGetCollection(t *testing.T) {
 
 func TestGetAllCollections(t *testing.T) {
 	tests := []struct {
-		description string
-		route       string
-
+		description   string
+		route         string
 		expectedError bool
 		expectedCode  int
 	}{
@@ -198,40 +187,32 @@ func TestGetAllCollections(t *testing.T) {
 
 		// Read the response body
 		body, err := ioutil.ReadAll(res.Body)
+		assert.Nilf(t, err, test.description)
 
 		var stac_collection []models.Collection
 
 		json.Unmarshal(body, &stac_collection)
-
-		// length := len(stac_collection)
-
-		// assert.Equal(t, length, 1, test.description)
-
-		// Reading the response body should work everytime, such that
-		// the err variable should be nil
-		assert.Nilf(t, err, test.description)
 	}
 }
 
-func TestDeleteCollection(t *testing.T) {
-	// Create client
-	client := &http.Client{}
+func TestEditCollection(t *testing.T) {
+	var expected_collection models.Collection
+	jsonFile, err := os.Open("setup_data/collection.json")
 
-	// Creaate Request
-	req, err := http.NewRequest("DELETE", "/collections/sentinel-s2-l2a-cogs-test", nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+	json.Unmarshal(byteValue, &expected_collection)
+	responseBody := bytes.NewBuffer(byteValue)
+
+	resp, err := http.Post("http://localhost:6001/collections", "application/json", responseBody)
 	if err != nil {
 		log.Fatalf("An Error Occured %v", err)
 	}
-
-	// Fetch Request
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 	defer resp.Body.Close()
 
-	assert.Equalf(t, 201, resp.Status, "create collection")
+	assert.Equalf(t, "201 Created", resp.Status, "edit collection")
 
 	// Read Response Body
 	body, err := ioutil.ReadAll(resp.Body)
@@ -243,10 +224,37 @@ func TestDeleteCollection(t *testing.T) {
 	var collection_response responses.CollectionResponse
 	json.Unmarshal(body, &collection_response)
 
-	assert.Equal(t, "success", collection_response.Message, "create collection")
+	assert.Equalf(t, "success", collection_response.Message, "update collection")
+}
 
-	// // Display Results
-	// fmt.Println("response Status : ", resp.Status)
-	// fmt.Println("response Headers : ", resp.Header)
-	// fmt.Println("response Body : ", string(respBody))
+func TestDeleteCollection(t *testing.T) {
+	app := Setup()
+
+	// Create Request
+	req, err := http.NewRequest("DELETE", "/collections/sentinel-s2-l2a-cogs-test", nil)
+	if err != nil {
+		log.Fatalf("An Error Occured %v", err)
+	}
+
+	// Fetch Request
+	resp, err := app.Test(req, -1)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	assert.Equalf(t, "200 OK", resp.Status, "create collection")
+
+	// Read Response Body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	var collection_response responses.CollectionResponse
+	json.Unmarshal(body, &collection_response)
+
+	assert.Equalf(t, "success", collection_response.Message, "create collection")
 }
