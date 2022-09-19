@@ -71,7 +71,7 @@ func TestCreateCollection(t *testing.T) {
 	assert.Equalf(t, "success", collection_response.Message, "create collection")
 }
 func TestGetCollection(t *testing.T) {
-	LoadCollection()
+	// LoadCollection()
 	LoadItems()
 
 	var expected_collection models.Collection
