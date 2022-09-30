@@ -197,22 +197,35 @@ func TestGetAllCollections(t *testing.T) {
 
 func TestEditCollection(t *testing.T) {
 	var expected_collection models.Collection
-	jsonFile, err := os.Open("setup_data/collection.json")
+	jsonFile, err := os.Open("setup_data/updated_collection.json")
 
 	if err != nil {
 		fmt.Println(err)
 	}
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	json.Unmarshal(byteValue, &expected_collection)
-	responseBody := bytes.NewBuffer(byteValue)
+	// responseBody := bytes.NewBuffer(byteValue)
 
-	resp, err := http.Post("http://localhost:6001/collections", "application/json", responseBody)
+	jsonReq, err := json.Marshal(expected_collection)
+
+	client := &http.Client{}
+	req, err := http.NewRequest(
+		http.MethodPut,
+		"http://localhost:6001/collections/sentinel-s2-l2a-cogs-test",
+		bytes.NewBuffer(jsonReq),
+	)
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	if err != nil {
+		log.Fatalf("An Error Occured %v", err)
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatalf("An Error Occured %v", err)
 	}
 	defer resp.Body.Close()
 
-	assert.Equalf(t, "201 Created", resp.Status, "edit collection")
+	assert.Equalf(t, "200 OK", resp.Status, "edit collection")
 
 	// Read Response Body
 	body, err := ioutil.ReadAll(resp.Body)
