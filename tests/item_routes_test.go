@@ -4,46 +4,20 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"go-stac-api/configs"
 	"go-stac-api/models"
 	"go-stac-api/responses"
-	"go-stac-api/routes"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cache"
-	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/etag"
-	"github.com/gofiber/fiber/v2/middleware/favicon"
-	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/stretchr/testify/assert"
 )
 
-func Setup() *fiber.App {
-	configs.ConnectDB()
-	app := fiber.New()
-
-	app.Use(cors.New())
-	app.Use(compress.New())
-	app.Use(cache.New())
-	app.Use(etag.New())
-	app.Use(favicon.New())
-	app.Use(recover.New())
-
-	routes.CollectionRoute(app)
-	routes.ItemRoute(app)
-
-	return app
-}
-
-func TestCreateCollection(t *testing.T) {
+func TestCreateItem(t *testing.T) {
 	var expected_collection models.Collection
-	jsonFile, err := os.Open("setup_data/collection.json")
+	jsonFile, err := os.Open("setup_data/S2B_1CCV_20181004_0_L2A-test.json")
 
 	if err != nil {
 		fmt.Println(err)
@@ -52,13 +26,13 @@ func TestCreateCollection(t *testing.T) {
 	json.Unmarshal(byteValue, &expected_collection)
 	responseBody := bytes.NewBuffer(byteValue)
 
-	resp, err := http.Post("http://localhost:6001/collections", "application/json", responseBody)
+	resp, err := http.Post("http://localhost:6001/collections/sentinel-s2-l2a-cogs-test/items", "application/json", responseBody)
 	if err != nil {
 		log.Fatalf("An Error Occured %v", err)
 	}
 	defer resp.Body.Close()
 
-	assert.Equalf(t, 201, resp.StatusCode, "create collection")
+	assert.Equalf(t, 201, resp.StatusCode, "create item")
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -70,30 +44,28 @@ func TestCreateCollection(t *testing.T) {
 
 	assert.Equalf(t, "success", collection_response.Message, "create collection")
 }
-func TestGetCollection(t *testing.T) {
-	// LoadCollection()
-	LoadItems()
 
-	var expected_collection models.Collection
-	jsonFile, _ := os.Open("setup_data/collection.json")
+func TestGetItem(t *testing.T) {
+	var expected_item models.Item
+	jsonFile, _ := os.Open("setup_data/S2B_1CCV_20181004_0_L2A-test.json")
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	json.Unmarshal(byteValue, &expected_collection)
+	json.Unmarshal(byteValue, &expected_item)
 
 	tests := []struct {
 		description   string
 		route         string
 		expectedError bool
 		expectedCode  int
-		expectedBody  models.Collection
+		expectedBody  models.Item
 	}{
 		{
 			description:   "GET collection route",
-			route:         "/collections/sentinel-s2-l2a-cogs-test",
+			route:         "/collections/sentinel-s2-l2a-cogs-test/items/S2B_1CCV_20181004_0_L2A-test",
 			expectedError: false,
 			expectedCode:  200,
-			expectedBody:  expected_collection,
+			expectedBody:  expected_item,
 		},
 	}
 
@@ -128,22 +100,22 @@ func TestGetCollection(t *testing.T) {
 
 		// Read the response body
 		body, err := ioutil.ReadAll(res.Body)
-		assert.Nilf(t, err, "Create collection")
+		assert.Nilf(t, err, "get item")
 
-		var stac_collection models.Collection
+		var stac_item models.Item
 
-		json.Unmarshal(body, &stac_collection)
+		json.Unmarshal(body, &stac_item)
 
 		// Reading the response body should work everytime, such that
 		// the err variable should be nil
 		assert.Nilf(t, err, test.description)
 
 		// Verify, that the reponse body equals the expected body
-		assert.Equalf(t, test.expectedBody, stac_collection, test.description)
+		assert.Equalf(t, test.expectedBody, stac_item, test.description)
 	}
 }
 
-func TestGetAllCollections(t *testing.T) {
+func TestGetItemCollection(t *testing.T) {
 	tests := []struct {
 		description   string
 		route         string
@@ -151,8 +123,8 @@ func TestGetAllCollections(t *testing.T) {
 		expectedCode  int
 	}{
 		{
-			description:   "GET collections route",
-			route:         "/collections",
+			description:   "GET item collection route",
+			route:         "/collections/sentinel-s2-l2a-cogs-test/items",
 			expectedError: false,
 			expectedCode:  200,
 		},
@@ -189,30 +161,30 @@ func TestGetAllCollections(t *testing.T) {
 		body, err := ioutil.ReadAll(res.Body)
 		assert.Nilf(t, err, test.description)
 
-		var stac_collection []models.Collection
+		var item_collection models.ItemCollection
 
-		json.Unmarshal(body, &stac_collection)
+		json.Unmarshal(body, &item_collection)
+
+		assert.GreaterOrEqual(t, item_collection.Context.Returned, 1, test.description)
 	}
 }
 
-func TestEditCollection(t *testing.T) {
-	var expected_collection models.Collection
-	jsonFile, err := os.Open("setup_data/updated_collection.json")
+func TestEditItem(t *testing.T) {
+	var expected_item models.Item
+	jsonFile, err := os.Open("setup_data/S2B_1CCV_20181004_0_L2A-test-updated.json")
 
 	if err != nil {
 		fmt.Println(err)
 	}
 	byteValue, _ := ioutil.ReadAll(jsonFile)
-	json.Unmarshal(byteValue, &expected_collection)
-	// responseBody := bytes.NewBuffer(byteValue)
-
-	jsonReq, err := json.Marshal(expected_collection)
+	json.Unmarshal(byteValue, &expected_item)
+	responseBody := bytes.NewBuffer(byteValue)
 
 	client := &http.Client{}
 	req, err := http.NewRequest(
 		http.MethodPut,
-		"http://localhost:6001/collections/sentinel-s2-l2a-cogs-test",
-		bytes.NewBuffer(jsonReq),
+		"http://localhost:6001/collections/sentinel-s2-l2a-cogs-test/items/S2B_1CCV_20181004_0_L2A-test",
+		responseBody,
 	)
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	if err != nil {
@@ -225,7 +197,7 @@ func TestEditCollection(t *testing.T) {
 	}
 	defer resp.Body.Close()
 
-	assert.Equalf(t, "200 OK", resp.Status, "edit collection")
+	assert.Equalf(t, "200 OK", resp.Status, "update item")
 
 	// Read Response Body
 	body, err := ioutil.ReadAll(resp.Body)
@@ -234,40 +206,8 @@ func TestEditCollection(t *testing.T) {
 		return
 	}
 
-	var collection_response responses.CollectionResponse
-	json.Unmarshal(body, &collection_response)
+	var item_response responses.CollectionResponse
+	json.Unmarshal(body, &item_response)
 
-	assert.Equalf(t, "success", collection_response.Message, "update collection")
-}
-
-func TestDeleteCollection(t *testing.T) {
-	app := Setup()
-
-	// Create Request
-	req, err := http.NewRequest("DELETE", "/collections/sentinel-s2-l2a-cogs-test", nil)
-	if err != nil {
-		log.Fatalf("An Error Occured %v", err)
-	}
-
-	// Fetch Request
-	resp, err := app.Test(req, -1)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer resp.Body.Close()
-
-	assert.Equalf(t, "200 OK", resp.Status, "create collection")
-
-	// Read Response Body
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	var collection_response responses.CollectionResponse
-	json.Unmarshal(body, &collection_response)
-
-	assert.Equalf(t, "success", collection_response.Message, "create collection")
+	assert.Equalf(t, "success", item_response.Message, "update item")
 }
