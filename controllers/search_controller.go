@@ -41,6 +41,23 @@ func PostSearch(c *fiber.Ctx) error {
 
 	filter := bson.M{}
 
+	if len(search.Bbox) > 0 {
+		ptA := [2]float64{search.Bbox[0], search.Bbox[1]}
+		ptB := [2]float64{search.Bbox[2], search.Bbox[1]}
+		ptC := [2]float64{search.Bbox[2], search.Bbox[3]}
+		ptD := [2]float64{search.Bbox[0], search.Bbox[3]}
+		firstArr := [][2]float64{ptA, ptB, ptC, ptD, ptA}
+		geom := [][][2]float64{firstArr}
+
+		filter["geometry"] = bson.M{
+			"$geoIntersects": bson.M{
+				"$geometry": bson.M{
+					"type":        "Polygon",
+					"coordinates": geom,
+				},
+			},
+		}
+	}
 	if search.Geometry.Type == "Point" {
 		geom := models.GeoJSONPoint{}.Coordinates
 		json.Unmarshal(search.Geometry.Coordinates, &geom)
@@ -141,7 +158,7 @@ func PostSearch(c *fiber.Ctx) error {
 	if len(search.Ids) > 0 {
 		filter["id"] = bson.M{"$in": search.Ids}
 	}
-	fmt.Println(filter)
+	fmt.Println("Filter: ", filter)
 
 	limit := 0
 	if search.Limit > 0 {
