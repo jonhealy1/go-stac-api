@@ -160,6 +160,10 @@ func PostSearch(c *fiber.Ctx) error {
 	}
 	fmt.Println("Filter: ", filter)
 
+	if len(search.Sort) > 0 {
+		fmt.Println("SORT: ", search.Sort[0])
+	}
+
 	limit := 0
 	if search.Limit > 0 {
 		limit = search.Limit
