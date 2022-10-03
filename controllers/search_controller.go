@@ -43,20 +43,8 @@ func PostSearch(c *fiber.Ctx) error {
 	filter := bson.M{}
 
 	if strings.Contains(search.Datetime, "/") {
-		result := strings.Split(search.Datetime, "/")
-		start := ""
-		end := ""
-		if result[0] != ".." {
-			start = result[0][0:19] + "Z"
-		} else {
-			start = "1900-01-01T01:01:01Z"
-		}
-		if result[1] != ".." {
-			end = result[1][0:19] + "Z"
-		} else {
-			end = "3000-01-01T01:01:01Z"
-		}
-		filter["properties.datetime"] = bson.M{"$gte": start, "$lte": end}
+		parsed := returnDatetime(search.Datetime)
+		filter["properties.datetime"] = bson.M{"$gte": parsed[0], "$lte": parsed[1]}
 	}
 	if len(search.Bbox) > 0 {
 		geom := bbox2polygon(search.Bbox)
