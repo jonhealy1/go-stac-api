@@ -29,4 +29,5 @@ func returnDatetime(datetime string) []string {
 	parsed := make([]string, 2)
 	parsed[0] = start
 	parsed[1] = end
+	return parsed
 }
