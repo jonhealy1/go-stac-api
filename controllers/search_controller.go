@@ -7,6 +7,7 @@ import (
 	"go-stac-api/models"
 	"go-stac-api/responses"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -41,6 +42,22 @@ func PostSearch(c *fiber.Ctx) error {
 
 	filter := bson.M{}
 
+	if strings.Contains(search.Datetime, "/") {
+		result := strings.Split(search.Datetime, "/")
+		start := ""
+		end := ""
+		if result[0] != ".." {
+			start = result[0][0:19] + "Z"
+		} else {
+			start = "1900-01-01T01:01:01Z"
+		}
+		if result[1] != ".." {
+			end = result[1][0:19] + "Z"
+		} else {
+			end = "3000-01-01T01:01:01Z"
+		}
+		filter["properties.datetime"] = bson.M{"$gte": start, "$lte": end}
+	}
 	if len(search.Bbox) > 0 {
 		geom := bbox2polygon(search.Bbox)
 
