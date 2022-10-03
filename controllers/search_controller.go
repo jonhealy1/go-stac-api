@@ -42,12 +42,7 @@ func PostSearch(c *fiber.Ctx) error {
 	filter := bson.M{}
 
 	if len(search.Bbox) > 0 {
-		ptA := [2]float64{search.Bbox[0], search.Bbox[1]}
-		ptB := [2]float64{search.Bbox[2], search.Bbox[1]}
-		ptC := [2]float64{search.Bbox[2], search.Bbox[3]}
-		ptD := [2]float64{search.Bbox[0], search.Bbox[3]}
-		firstArr := [][2]float64{ptA, ptB, ptC, ptD, ptA}
-		geom := [][][2]float64{firstArr}
+		geom := bbox2polygon(search.Bbox)
 
 		filter["geometry"] = bson.M{
 			"$geoIntersects": bson.M{
