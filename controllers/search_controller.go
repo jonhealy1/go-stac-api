@@ -168,6 +168,15 @@ func PostSearch(c *fiber.Ctx) error {
 	}
 
 	opts := options.Find().SetLimit(int64(limit))
+	if len(search.Sort) > 0 {
+		field := "properties." + search.Sort[0].Field
+		value := 1
+		if search.Sort[0].Direction == "desc" {
+			value = -1
+		}
+		opts = options.Find().SetLimit(int64(limit)).SetSort(bson.D{{Key: field, Value: value}})
+	}
+
 	results, err := stacItem.Find(ctx, filter, opts)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})

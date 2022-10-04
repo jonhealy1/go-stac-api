@@ -6,10 +6,16 @@ type Search struct {
 	Ids                []string                  `json:"ids,omitempty"`
 	Collections        []string                  `json:"collections,omitempty"`
 	Limit              int                       `json:"limit,omitempty"`
+	Sort               []Sort                    `json:"sort,omitempty"`
 	Datetime           string                    `json:"datetime,omitempty"`
 	Bbox               []float64                 `json:"bbox,omitempty"`
 	Geometry           GeoJSONGenericGeometry    `json:"geometry,omitempty"`
 	GeometryCollection GeoJSONGeometryCollection `json:"geometrycollection,omitempty"`
+}
+
+type Sort struct {
+	Field     string `json:"field,omitempty"`
+	Direction string `json:"direction,omitempty"`
 }
 
 type GeoJSONGeometryCollection struct {
