@@ -7,6 +7,7 @@ type Search struct {
 	Collections        []string                  `json:"collections,omitempty"`
 	Limit              int                       `json:"limit,omitempty"`
 	Sort               []Sort                    `json:"sort,omitempty"`
+	Query              map[string]interface{}    `json:"query,omitempty"`
 	Datetime           string                    `json:"datetime,omitempty"`
 	Bbox               []float64                 `json:"bbox,omitempty"`
 	Geometry           GeoJSONGenericGeometry    `json:"geometry,omitempty"`
