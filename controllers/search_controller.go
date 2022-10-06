@@ -42,6 +42,18 @@ func PostSearch(c *fiber.Ctx) error {
 
 	filter := bson.M{}
 
+	queries := make([]string, 0, len(search.Query))
+
+	for k := range search.Query {
+		if val, ok := search.Query[k]["lte"]; ok {
+			property := "properties." + k
+			filter[property] = bson.M{"$lte": val}
+		}
+		queries = append(queries, k)
+	}
+
+	fmt.Println(queries)
+
 	if strings.Contains(search.Datetime, "/") {
 		parsed := returnDatetime(search.Datetime)
 		filter["properties.datetime"] = bson.M{"$gte": parsed[0], "$lte": parsed[1]}
