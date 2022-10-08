@@ -27,7 +27,7 @@ import (
 func PostSearch(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var search models.Search
-	var items []models.Item
+	var items []map[string]interface{}
 	defer cancel()
 
 	//validate the request body
@@ -208,18 +208,41 @@ func PostSearch(c *fiber.Ctx) error {
 		}
 	}
 	if len(search.Fields.Exclude) > 0 {
-		for _, include := range search.Fields.Include {
-			fmt.Println(include)
+		for _, exclude := range search.Fields.Exclude {
+			fmt.Println(exclude)
 		}
 	}
 
 	count := 0
 	for results.Next(ctx) {
-		var singleItem models.Item
+		var singleItem map[string]interface{}
 		if err = results.Decode(&singleItem); err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 		}
-		items = append(items, singleItem)
+		singleItem["stac_version"] = singleItem["stacversion"]
+		singleItem["stac_extensions"] = singleItem["stacextensions"]
+		delete(singleItem, "_id")
+		delete(singleItem, "stacversion")
+		delete(singleItem, "stacextensions")
+		if len(search.Fields.Include) > 0 || len(search.Fields.Exclude) > 0 {
+			newItem := make(map[string]interface{})
+			if len(search.Fields.Include) > 0 {
+				for _, include := range search.Fields.Include {
+					newItem[include] = singleItem[include]
+				}
+			}
+			if len(search.Fields.Include) == 0 {
+				newItem = singleItem
+			}
+			if len(search.Fields.Exclude) > 0 {
+				for _, exclude := range search.Fields.Exclude {
+					delete(newItem, exclude)
+				}
+			}
+			items = append(items, newItem)
+		} else {
+			items = append(items, singleItem)
+		}
 		count = count + 1
 	}
 
@@ -228,7 +251,7 @@ func PostSearch(c *fiber.Ctx) error {
 		Limit:    limit,
 	}
 
-	itemCollection := models.ItemCollection{
+	itemCollection := models.ItemCollection2{
 		Type:     "FeatureCollection",
 		Context:  context,
 		Features: items,
