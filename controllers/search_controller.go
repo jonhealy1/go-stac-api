@@ -196,14 +196,14 @@ func PostSearch(c *fiber.Ctx) error {
 
 	if len(search.Fields.Include) > 0 || len(search.Fields.Exclude) > 0 {
 		projection := bson.M{}
-		if len(search.Fields.Include) >= 0 {
-			for _, include := range search.Fields.Include {
-				projection[include] = 1
-			}
-		}
-		if len(search.Fields.Exclude) >= 0 {
+		if len(search.Fields.Exclude) > 0 {
 			for _, exclude := range search.Fields.Exclude {
 				projection[exclude] = 0
+			}
+		}
+		if len(search.Fields.Include) > 0 && len(search.Fields.Exclude) == 0 {
+			for _, include := range search.Fields.Include {
+				projection[include] = 1
 			}
 		}
 		opts = options.Find().SetLimit(int64(limit)).SetProjection(projection)
@@ -232,7 +232,18 @@ func PostSearch(c *fiber.Ctx) error {
 		if _, ok := singleItem["_id"]; ok {
 			delete(singleItem, "_id")
 		}
-		items = append(items, singleItem)
+		if len(search.Fields.Include) > 0 && len(search.Fields.Exclude) > 0 {
+			newItem := make(map[string]interface{})
+			for _, include := range search.Fields.Include {
+				if _, ok := singleItem[include]; ok {
+					newItem[include] = singleItem[include]
+				}
+			}
+			items = append(items, newItem)
+		} else {
+			items = append(items, singleItem)
+		}
+
 		count = count + 1
 	}
 
