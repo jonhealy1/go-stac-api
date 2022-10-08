@@ -201,6 +201,18 @@ func PostSearch(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 	}
 	defer results.Close(ctx)
+
+	if len(search.Fields.Include) > 0 {
+		for _, include := range search.Fields.Include {
+			fmt.Println(include)
+		}
+	}
+	if len(search.Fields.Exclude) > 0 {
+		for _, include := range search.Fields.Include {
+			fmt.Println(include)
+		}
+	}
+
 	count := 0
 	for results.Next(ctx) {
 		var singleItem models.Item
