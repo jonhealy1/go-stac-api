@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"go-stac-api/models"
 	"go-stac-api/responses"
 	"net/http"
@@ -177,7 +176,6 @@ func PostSearch(c *fiber.Ctx) error {
 	if len(search.Ids) > 0 {
 		filter["id"] = bson.M{"$in": search.Ids}
 	}
-	fmt.Println("Filter: ", filter)
 
 	limit := 0
 	if search.Limit > 0 {
@@ -196,22 +194,26 @@ func PostSearch(c *fiber.Ctx) error {
 		opts = options.Find().SetLimit(int64(limit)).SetSort(bson.D{{Key: field, Value: value}})
 	}
 
+	if len(search.Fields.Include) > 0 || len(search.Fields.Exclude) > 0 {
+		projection := bson.M{}
+		if len(search.Fields.Include) >= 0 {
+			for _, include := range search.Fields.Include {
+				projection[include] = 1
+			}
+		}
+		if len(search.Fields.Exclude) >= 0 {
+			for _, exclude := range search.Fields.Exclude {
+				projection[exclude] = 0
+			}
+		}
+		opts = options.Find().SetLimit(int64(limit)).SetProjection(projection)
+	}
+
 	results, err := stacItem.Find(ctx, filter, opts)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 	}
 	defer results.Close(ctx)
-
-	if len(search.Fields.Include) > 0 {
-		for _, include := range search.Fields.Include {
-			fmt.Println(include)
-		}
-	}
-	if len(search.Fields.Exclude) > 0 {
-		for _, exclude := range search.Fields.Exclude {
-			fmt.Println(exclude)
-		}
-	}
 
 	count := 0
 	for results.Next(ctx) {
@@ -219,30 +221,18 @@ func PostSearch(c *fiber.Ctx) error {
 		if err = results.Decode(&singleItem); err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
 		}
-		singleItem["stac_version"] = singleItem["stacversion"]
-		singleItem["stac_extensions"] = singleItem["stacextensions"]
-		delete(singleItem, "_id")
-		delete(singleItem, "stacversion")
-		delete(singleItem, "stacextensions")
-		if len(search.Fields.Include) > 0 || len(search.Fields.Exclude) > 0 {
-			newItem := make(map[string]interface{})
-			if len(search.Fields.Include) > 0 {
-				for _, include := range search.Fields.Include {
-					newItem[include] = singleItem[include]
-				}
-			}
-			if len(search.Fields.Include) == 0 {
-				newItem = singleItem
-			}
-			if len(search.Fields.Exclude) > 0 {
-				for _, exclude := range search.Fields.Exclude {
-					delete(newItem, exclude)
-				}
-			}
-			items = append(items, newItem)
-		} else {
-			items = append(items, singleItem)
+		if _, ok := singleItem["stacversion"]; ok {
+			singleItem["stac_version"] = singleItem["stacversion"]
+			delete(singleItem, "stacversion")
 		}
+		if _, ok := singleItem["stacextensions"]; ok {
+			singleItem["stac_extensions"] = singleItem["stacextensions"]
+			delete(singleItem, "stacextensions")
+		}
+		if _, ok := singleItem["_id"]; ok {
+			delete(singleItem, "_id")
+		}
+		items = append(items, singleItem)
 		count = count + 1
 	}
 
