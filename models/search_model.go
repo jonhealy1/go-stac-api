@@ -8,10 +8,16 @@ type Search struct {
 	Limit              int                           `json:"limit,omitempty"`
 	Sort               []Sort                        `json:"sort,omitempty"`
 	Query              map[string]map[string]float64 `json:"query,omitempty"`
+	Fields             Fields                        `json:"fields,omitempty"`
 	Datetime           string                        `json:"datetime,omitempty"`
 	Bbox               []float64                     `json:"bbox,omitempty"`
 	Geometry           GeoJSONGenericGeometry        `json:"geometry,omitempty"`
 	GeometryCollection GeoJSONGeometryCollection     `json:"geometrycollection,omitempty"`
+}
+
+type Fields struct {
+	Include []string `json:"include,omitempty"`
+	Exclude []string `json:"exclude,omitempty"`
 }
 
 type Sort struct {
