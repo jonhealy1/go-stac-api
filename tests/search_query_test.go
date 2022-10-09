@@ -45,3 +45,38 @@ func TestSearchQueryEq(t *testing.T) {
 
 	assert.Equal(t, bodyResponse.Data.Features[0].Properties["eo:cloud_cover"], 96.91)
 }
+
+func TestSearchQueryLte(t *testing.T) {
+
+	// Setup the app as it is done in the main function
+	app := Setup()
+
+	body := []byte(`{"query": {"eo:cloud_cover": {"lte": 6.91}}}`)
+
+	req, _ := http.NewRequest(
+		"POST",
+		"/search",
+		bytes.NewBuffer(body),
+	)
+	req.Header.Add("Content-Type", "application/json")
+
+	// Perform the request plain with the app.
+	// The -1 disables request latency.
+	res, err := app.Test(req, -1)
+
+	// // verify that no error occured, that is not expected
+	assert.Equalf(t, false, err != nil, "sort asc test")
+
+	// Verify if the status code is as expected
+	assert.Equalf(t, 200, res.StatusCode, "sort asc test")
+
+	// Read the response body
+	resp_body, err := ioutil.ReadAll(res.Body)
+	assert.Nilf(t, err, "query eq")
+
+	var bodyResponse models.ItemResponse
+
+	json.Unmarshal(resp_body, &bodyResponse)
+
+	assert.LessOrEqual(t, bodyResponse.Data.Features[0].Properties["eo:cloud_cover"], 6.91)
+}
