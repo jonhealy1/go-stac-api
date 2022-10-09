@@ -50,6 +50,10 @@ func PostSearch(c *fiber.Ctx) error {
 			property := "properties." + k
 			filter[property] = bson.M{"$lt": val}
 		}
+		if val, ok := search.Query[k]["gt"]; ok {
+			property := "properties." + k
+			filter[property] = bson.M{"$gt": val}
+		}
 		if val, ok := search.Query[k]["gte"]; ok {
 			property := "properties." + k
 			filter[property] = bson.M{"$gte": val}
