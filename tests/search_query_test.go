@@ -47,8 +47,6 @@ func TestSearchQueryEq(t *testing.T) {
 }
 
 func TestSearchQueryLte(t *testing.T) {
-
-	// Setup the app as it is done in the main function
 	app := Setup()
 
 	body := []byte(`{"query": {"eo:cloud_cover": {"lte": 6.91}}}`)
@@ -60,17 +58,12 @@ func TestSearchQueryLte(t *testing.T) {
 	)
 	req.Header.Add("Content-Type", "application/json")
 
-	// Perform the request plain with the app.
-	// The -1 disables request latency.
 	res, err := app.Test(req, -1)
 
-	// // verify that no error occured, that is not expected
 	assert.Equalf(t, false, err != nil, "sort asc test")
 
-	// Verify if the status code is as expected
 	assert.Equalf(t, 200, res.StatusCode, "sort asc test")
 
-	// Read the response body
 	resp_body, err := ioutil.ReadAll(res.Body)
 	assert.Nilf(t, err, "query eq")
 
@@ -79,4 +72,32 @@ func TestSearchQueryLte(t *testing.T) {
 	json.Unmarshal(resp_body, &bodyResponse)
 
 	assert.LessOrEqual(t, bodyResponse.Data.Features[0].Properties["eo:cloud_cover"], 6.91)
+}
+
+func TestSearchQueryGte(t *testing.T) {
+	app := Setup()
+
+	body := []byte(`{"query": {"eo:cloud_cover": {"gte": 50.1}}}`)
+
+	req, _ := http.NewRequest(
+		"POST",
+		"/search",
+		bytes.NewBuffer(body),
+	)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := app.Test(req, -1)
+
+	assert.Equalf(t, false, err != nil, "sort asc test")
+
+	assert.Equalf(t, 200, res.StatusCode, "sort asc test")
+
+	resp_body, err := ioutil.ReadAll(res.Body)
+	assert.Nilf(t, err, "query eq")
+
+	var bodyResponse models.ItemResponse
+
+	json.Unmarshal(resp_body, &bodyResponse)
+
+	assert.LessOrEqual(t, 50.1, bodyResponse.Data.Features[0].Properties["eo:cloud_cover"])
 }
