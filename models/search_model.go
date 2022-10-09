@@ -1,6 +1,8 @@
 package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type Search struct {
 	Ids                []string                      `json:"ids,omitempty"`
@@ -55,4 +57,10 @@ type GeoJSONPolygon struct {
 type GeoJSONMultiPolygon struct {
 	Type        string           `json:"type"`
 	Coordinates [][][][2]float64 `json:"coordinates"`
+}
+
+type ItemResponse struct {
+	Status  string         `json:"status,omitempty"`
+	Message string         `json:"message,omitempty"`
+	Data    ItemCollection `json:"data,omitempty"`
 }
