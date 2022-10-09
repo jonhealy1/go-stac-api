@@ -12,42 +12,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSearchFields(t *testing.T) {
+func TestSearchFieldsExclude(t *testing.T) {
 	var expected_item models.Item
-	var expected_items []models.Item
-	var expected_fc models.ItemCollection
+
 	jsonFile, _ := os.Open("setup_data/S2B_1CCV_20181004_0_L2A-test.json")
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	json.Unmarshal(byteValue, &expected_item)
 
-	expected_items = append(expected_items, expected_item)
-	expected_fc.Features = expected_items
-
 	tests := []struct {
 		description   string
 		route         string
 		expectedError bool
 		expectedCode  int
-		expectedBody  models.ItemCollection
+		expectedBody  models.Item
 	}{
 		{
 			description:   "POST search fields test route",
 			route:         "/search",
 			expectedError: false,
 			expectedCode:  200,
-			expectedBody:  expected_fc,
+			expectedBody:  expected_item,
 		},
 	}
 
 	// Setup the app as it is done in the main function
 	app := Setup()
 
-	var fields models.Fields
-	fields.Include = append(fields.Include, "properties")
-
-	body := []byte(`{"fields": {"include":["properties"]}}`)
+	body := []byte(`{"fields": {"exclude":["properties.created"]}}`)
 
 	// Iterate through test single test cases
 	for _, test := range tests {
@@ -76,19 +69,23 @@ func TestSearchFields(t *testing.T) {
 		// Verify if the status code is as expected
 		assert.Equalf(t, test.expectedCode, res.StatusCode, test.description)
 
-		// // Read the response body
-		// body, err := ioutil.ReadAll(res.Body)
-		// assert.Nilf(t, err, "get item")
+		// Read the response body
+		body, err := ioutil.ReadAll(res.Body)
+		assert.Nilf(t, err, "get item")
 
-		// var stac_fc models.ItemCollection
+		var bodyResponse models.ItemResponse
 
-		// json.Unmarshal(body, &stac_fc)
+		json.Unmarshal(body, &bodyResponse)
 
-		// // Reading the response body should work everytime, such that
-		// // the err variable should be nil
-		// assert.Nilf(t, err, test.description)
+		// Reading the response body should work everytime, such that
+		// the err variable should be nil
+		assert.Nilf(t, err, test.description)
 
-		// // Verify, that the reponse body equals the expected body
-		// assert.Equalf(t, test.expectedBody.Features, stac_fc.Features, test.description)
+		assert.Nil(t, bodyResponse.Data.Features[0].Properties["created"])
+
+		delete(test.expectedBody.Properties, "created")
+
+		// Verify, that the reponse body equals the expected body
+		assert.Equalf(t, test.expectedBody.Properties, bodyResponse.Data.Features[0].Properties, test.description)
 	}
 }
