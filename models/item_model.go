@@ -23,3 +23,9 @@ type ItemCollection struct {
 	Context  Context `json:"context,omitempty"`
 	Features []Item  `json:"features,omitempty"`
 }
+
+type ItemCollection2 struct {
+	Type     string                   `json:"type,omitempty"`
+	Context  Context                  `json:"context,omitempty"`
+	Features []map[string]interface{} `json:"features,omitempty"`
+}
