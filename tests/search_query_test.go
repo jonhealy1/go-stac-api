@@ -157,3 +157,32 @@ func TestSearchQueryGt(t *testing.T) {
 
 	assert.LessOrEqual(t, 99.91, bodyResponse.Data.Features[0].Properties["eo:cloud_cover"])
 }
+
+func TestSearchQueryMulti(t *testing.T) {
+	app := Setup()
+
+	body := []byte(`{"query": {"data_coverage": {"gte": 20.18}, "eo:cloud_cover": {"lte": 17.19}}}`)
+
+	req, _ := http.NewRequest(
+		"POST",
+		"/search",
+		bytes.NewBuffer(body),
+	)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := app.Test(req, -1)
+
+	assert.Equalf(t, false, err != nil, "sort asc test")
+
+	assert.Equalf(t, 200, res.StatusCode, "sort asc test")
+
+	resp_body, err := ioutil.ReadAll(res.Body)
+	assert.Nilf(t, err, "query eq")
+
+	var bodyResponse models.ItemResponse
+
+	json.Unmarshal(resp_body, &bodyResponse)
+
+	assert.LessOrEqual(t, bodyResponse.Data.Features[0].Properties["eo:cloud_cover"], 17.19)
+	assert.LessOrEqual(t, 20.18, bodyResponse.Data.Features[0].Properties["data_coverage"])
+}
