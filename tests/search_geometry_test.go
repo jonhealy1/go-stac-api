@@ -78,3 +78,35 @@ func TestSearchPoint(t *testing.T) {
 	assert.LessOrEqual(t, bodyResponse.Data.Features[0].Bbox[1], -72.31064)
 	assert.LessOrEqual(t, -72.31064, bodyResponse.Data.Features[0].Bbox[3])
 }
+
+func TestSearchLine(t *testing.T) {
+	app := Setup()
+
+	body := []byte(`{"geometry": {"type": "LineString", "coordinates": [[177.85156249999997,-72.554563528593656],[177.101642,-72.690647]]}}`)
+
+	req, _ := http.NewRequest(
+		"POST",
+		"/search",
+		bytes.NewBuffer(body),
+	)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := app.Test(req, -1)
+
+	assert.Equalf(t, false, err != nil, "bbox test")
+
+	assert.Equalf(t, 200, res.StatusCode, "bbox test")
+
+	resp_body, err := ioutil.ReadAll(res.Body)
+	assert.Nilf(t, err, "query dateime")
+
+	var bodyResponse models.ItemResponse
+
+	json.Unmarshal(resp_body, &bodyResponse)
+
+	assert.LessOrEqual(t, bodyResponse.Data.Features[0].Bbox[0], 177.101642)
+	assert.LessOrEqual(t, 177.85156249999997, bodyResponse.Data.Features[0].Bbox[2])
+
+	assert.LessOrEqual(t, bodyResponse.Data.Features[0].Bbox[1], -72.690647)
+	assert.LessOrEqual(t, -72.554563528593656, bodyResponse.Data.Features[0].Bbox[3])
+}
