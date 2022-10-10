@@ -14,7 +14,7 @@ type Item struct {
 }
 
 type Context struct {
-	Returned int `json:"returned,omitempty"`
+	Returned int
 	Limit    int `json:"limit,omitempty"`
 }
 

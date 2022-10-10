@@ -14,7 +14,10 @@ import (
 func TestSearchBbox(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"bbox": [147.795950,-78.076921,179.557669,-65.760298]}`)
+	body := []byte(`{
+		"bbox": [147.795950,-78.076921,179.557669,-65.760298],
+		"collections": ["sentinel-s2-l2a-cogs-test"]
+	}`)
 
 	req, _ := http.NewRequest(
 		"POST",
@@ -47,10 +50,44 @@ func TestSearchBbox(t *testing.T) {
 	assert.LessOrEqual(t, -78.076921, bodyResponse.Data.Features[0].Bbox[3])
 }
 
+func TestSearchBboxNoResults(t *testing.T) {
+	app := Setup()
+
+	body := []byte(`{
+		"bbox": [147.795950,18.076921,179.557669,15.760298],
+		"collections": ["sentinel-s2-l2a-cogs-test"]
+	}`)
+
+	req, _ := http.NewRequest(
+		"POST",
+		"/search",
+		bytes.NewBuffer(body),
+	)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := app.Test(req, -1)
+
+	assert.Equalf(t, false, err != nil, "bbox test")
+
+	assert.Equalf(t, 200, res.StatusCode, "bbox test")
+
+	resp_body, err := ioutil.ReadAll(res.Body)
+	assert.Nilf(t, err, "query dateime")
+
+	var bodyResponse models.ItemResponse
+
+	json.Unmarshal(resp_body, &bodyResponse)
+
+	assert.Equal(t, bodyResponse.Data.Context.Returned, 0)
+}
+
 func TestSearchPoint(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"geometry": {"type": "Point", "coordinates": [178.01642, -72.31064]}}`)
+	body := []byte(`{
+		"geometry": {"type": "Point", "coordinates": [178.01642, -72.31064]},
+		"collections": ["sentinel-s2-l2a-cogs-test"]
+	}`)
 
 	req, _ := http.NewRequest(
 		"POST",
@@ -79,10 +116,46 @@ func TestSearchPoint(t *testing.T) {
 	assert.LessOrEqual(t, -72.31064, bodyResponse.Data.Features[0].Bbox[3])
 }
 
+func TestSearchPointNoResults(t *testing.T) {
+	app := Setup()
+
+	body := []byte(`{
+		"geometry": {"type": "Point", "coordinates": [178.01642, 72.31064]},
+		"collections": ["sentinel-s2-l2a-cogs-test"]
+	}`)
+
+	req, _ := http.NewRequest(
+		"POST",
+		"/search",
+		bytes.NewBuffer(body),
+	)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := app.Test(req, -1)
+
+	assert.Equalf(t, false, err != nil, "bbox test")
+
+	assert.Equalf(t, 200, res.StatusCode, "bbox test")
+
+	resp_body, err := ioutil.ReadAll(res.Body)
+	assert.Nilf(t, err, "query dateime")
+
+	var bodyResponse models.ItemResponse
+
+	json.Unmarshal(resp_body, &bodyResponse)
+
+	assert.Equal(t, bodyResponse.Data.Context.Returned, 0)
+}
+
 func TestSearchLineString(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"geometry": {"type": "LineString", "coordinates": [[177.85156249999997,-72.554563528593656],[177.101642,-72.690647]]}}`)
+	body := []byte(`{
+		"collections": ["sentinel-s2-l2a-cogs-test"],
+		"geometry": {
+			"type": "LineString", 
+			"coordinates": [[177.85156249999997,-72.554563528593656],[177.101642,-72.690647]]
+		}}`)
 
 	req, _ := http.NewRequest(
 		"POST",
@@ -111,10 +184,45 @@ func TestSearchLineString(t *testing.T) {
 	assert.LessOrEqual(t, -72.554563528593656, bodyResponse.Data.Features[0].Bbox[3])
 }
 
+func TestSearchLineStringNoResults(t *testing.T) {
+	app := Setup()
+
+	body := []byte(`{
+		"collections": ["sentinel-s2-l2a-cogs-test"],
+		"geometry": {
+			"type": "LineString", 
+			"coordinates": [[177.85156249999997,72.554563528593656],[177.101642,72.690647]]
+		}}`)
+
+	req, _ := http.NewRequest(
+		"POST",
+		"/search",
+		bytes.NewBuffer(body),
+	)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := app.Test(req, -1)
+
+	assert.Equalf(t, false, err != nil, "bbox test")
+
+	assert.Equalf(t, 200, res.StatusCode, "bbox test")
+
+	resp_body, err := ioutil.ReadAll(res.Body)
+	assert.Nilf(t, err, "query dateime")
+
+	var bodyResponse models.ItemResponse
+
+	json.Unmarshal(resp_body, &bodyResponse)
+
+	assert.Equal(t, bodyResponse.Data.Context.Returned, 0)
+}
+
 func TestSearchPolygon(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"geometry": {
+	body := []byte(`{
+		"collections": ["sentinel-s2-l2a-cogs-test"],
+		"geometry": {
 		"type": "Polygon",
         "coordinates": [[
             [
@@ -171,10 +279,66 @@ func TestSearchPolygon(t *testing.T) {
 	assert.LessOrEqual(t, -78.076921, bodyResponse.Data.Features[0].Bbox[3])
 }
 
+func TestSearchPolygonNoResults(t *testing.T) {
+	app := Setup()
+
+	body := []byte(`{
+		"collections": ["sentinel-s2-l2a-cogs-test"],
+		"geometry": {
+		"type": "Polygon",
+        "coordinates": [[
+            [
+              17.8515625,
+              -74.14512718337613
+            ],
+            [
+              18.35937499999999,
+              -74.14512718337613
+            ],
+            [
+              18.35937499999999,
+              -72.15296965617042
+            ],
+            [
+              17.8515625,
+              -72.15296965617042
+            ],
+            [
+              17.8515625,
+              -74.14512718337613
+            ]
+        ]]
+	}}`)
+
+	req, _ := http.NewRequest(
+		"POST",
+		"/search",
+		bytes.NewBuffer(body),
+	)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := app.Test(req, -1)
+
+	assert.Equalf(t, false, err != nil, "bbox test")
+
+	assert.Equalf(t, 200, res.StatusCode, "bbox test")
+
+	resp_body, err := ioutil.ReadAll(res.Body)
+	assert.Nilf(t, err, "query dateime")
+
+	var bodyResponse models.ItemResponse
+
+	json.Unmarshal(resp_body, &bodyResponse)
+
+	assert.Equal(t, bodyResponse.Data.Context.Returned, 0)
+}
+
 func TestSearchGeometryCollection(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"geometry": {
+	body := []byte(`{
+		"collections": ["sentinel-s2-l2a-cogs-test"],
+		"geometry": {
 		"type": "GeometryCollection", 
 		"geometries": [
 			{
