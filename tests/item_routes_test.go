@@ -16,14 +16,14 @@ import (
 )
 
 func TestCreateItem(t *testing.T) {
-	var expected_collection models.Collection
+	var expected_item models.Item
 	jsonFile, err := os.Open("setup_data/S2B_1CCV_20181004_0_L2A-test.json")
 
 	if err != nil {
 		fmt.Println(err)
 	}
 	byteValue, _ := ioutil.ReadAll(jsonFile)
-	json.Unmarshal(byteValue, &expected_collection)
+	json.Unmarshal(byteValue, &expected_item)
 	responseBody := bytes.NewBuffer(byteValue)
 
 	resp, err := http.Post("http://localhost:6001/collections/sentinel-s2-l2a-cogs-test/items", "application/json", responseBody)
@@ -42,7 +42,7 @@ func TestCreateItem(t *testing.T) {
 	var collection_response responses.CollectionResponse
 	json.Unmarshal(body, &collection_response)
 
-	assert.Equalf(t, "success", collection_response.Message, "create collection")
+	assert.Equalf(t, "success", collection_response.Message, "create item")
 }
 
 func TestGetItem(t *testing.T) {
@@ -210,4 +210,20 @@ func TestEditItem(t *testing.T) {
 	json.Unmarshal(body, &item_response)
 
 	assert.Equalf(t, "success", item_response.Message, "update item")
+}
+
+func TestDeleteItem(t *testing.T) {
+	app := Setup()
+	resp, err := http.NewRequest(
+		"DELETE",
+		"http://localhost:6001/collections/sentinel-s2-l2a-cogs-test/items/S2B_1CCV_20181004_0_L2A-test",
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("An Error Occured %v", err)
+	}
+
+	res, err := app.Test(resp, -1)
+
+	assert.Equalf(t, 200, res.StatusCode, "delete item")
 }
