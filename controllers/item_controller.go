@@ -56,6 +56,14 @@ func CreateItem(c *fiber.Ctx) error {
 		Links:          item.Links,
 	}
 
+	count, err := stacItem.CountDocuments(ctx, bson.M{"id": item.Id, "collection": item.Collection})
+	if err != nil {
+		panic(err)
+	}
+	if count >= 1 {
+		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "Document exists already", Data: err.Error()})
+	}
+
 	result, err := stacItem.InsertOne(ctx, newItem)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(responses.ItemResponse{Status: http.StatusInternalServerError, Message: "error", Data: err.Error()})
