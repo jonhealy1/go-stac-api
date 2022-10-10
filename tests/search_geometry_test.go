@@ -184,6 +184,39 @@ func TestSearchLineString(t *testing.T) {
 	assert.LessOrEqual(t, -72.554563528593656, bodyResponse.Data.Features[0].Bbox[3])
 }
 
+func TestSearchLineStringNoResults(t *testing.T) {
+	app := Setup()
+
+	body := []byte(`{
+		"collections": ["sentinel-s2-l2a-cogs-test"],
+		"geometry": {
+			"type": "LineString", 
+			"coordinates": [[177.85156249999997,72.554563528593656],[177.101642,72.690647]]
+		}}`)
+
+	req, _ := http.NewRequest(
+		"POST",
+		"/search",
+		bytes.NewBuffer(body),
+	)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := app.Test(req, -1)
+
+	assert.Equalf(t, false, err != nil, "bbox test")
+
+	assert.Equalf(t, 200, res.StatusCode, "bbox test")
+
+	resp_body, err := ioutil.ReadAll(res.Body)
+	assert.Nilf(t, err, "query dateime")
+
+	var bodyResponse models.ItemResponse
+
+	json.Unmarshal(resp_body, &bodyResponse)
+
+	assert.Equal(t, bodyResponse.Data.Context.Returned, 0)
+}
+
 func TestSearchPolygon(t *testing.T) {
 	app := Setup()
 
