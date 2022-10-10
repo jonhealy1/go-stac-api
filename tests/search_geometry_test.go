@@ -14,7 +14,10 @@ import (
 func TestSearchBbox(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"bbox": [147.795950,-78.076921,179.557669,-65.760298]}`)
+	body := []byte(`{
+		"bbox": [147.795950,-78.076921,179.557669,-65.760298],
+		"collections": ["sentinel-s2-l2a-cogs-test"]
+	}`)
 
 	req, _ := http.NewRequest(
 		"POST",
@@ -50,7 +53,10 @@ func TestSearchBbox(t *testing.T) {
 func TestSearchPoint(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"geometry": {"type": "Point", "coordinates": [178.01642, -72.31064]}}`)
+	body := []byte(`{
+		"geometry": {"type": "Point", "coordinates": [178.01642, -72.31064]},
+		"collections": ["sentinel-s2-l2a-cogs-test"]
+	}`)
 
 	req, _ := http.NewRequest(
 		"POST",
@@ -82,7 +88,12 @@ func TestSearchPoint(t *testing.T) {
 func TestSearchLineString(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"geometry": {"type": "LineString", "coordinates": [[177.85156249999997,-72.554563528593656],[177.101642,-72.690647]]}}`)
+	body := []byte(`{
+		"collections": ["sentinel-s2-l2a-cogs-test"],
+		"geometry": {
+			"type": "LineString", 
+			"coordinates": [[177.85156249999997,-72.554563528593656],[177.101642,-72.690647]]
+		}}`)
 
 	req, _ := http.NewRequest(
 		"POST",
@@ -114,7 +125,9 @@ func TestSearchLineString(t *testing.T) {
 func TestSearchPolygon(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"geometry": {
+	body := []byte(`{
+		"collections": ["sentinel-s2-l2a-cogs-test"],
+		"geometry": {
 		"type": "Polygon",
         "coordinates": [[
             [
@@ -174,7 +187,9 @@ func TestSearchPolygon(t *testing.T) {
 func TestSearchGeometryCollection(t *testing.T) {
 	app := Setup()
 
-	body := []byte(`{"geometry": {
+	body := []byte(`{
+		"collections": ["sentinel-s2-l2a-cogs-test"],
+		"geometry": {
 		"type": "GeometryCollection", 
 		"geometries": [
 			{
