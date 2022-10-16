@@ -33,6 +33,11 @@ jobs:
 
       - name: Run
         run: go run main.go
+        env:
+          MONGOURI: mongodb://stac:root@database:27017
+          MONGOLOCAL: mongodb://stac:root@localhost:27017
+        ports:
+          - 6001:6001
 
       - name: Test
         run: go test -v ./...
