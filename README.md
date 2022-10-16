@@ -7,7 +7,7 @@ To start mongodb on localhost:27017 with docker-compose
 To start the api on localhost:6001 with docker-compose    
 ```$ make api```   
 
-To start the api on localhost:6001 outside of docker   
+To start the api on localhost:6001, outside of docker   
 ```$ go run main.go```   
    
 To use mongo express for viewing the db on localhost:8081 with docker-compose  
